@@ -1,24 +1,23 @@
 # SQLServerCoverage 
 
-#### Code coverage for SQL Server T-SQL (From [SQLCover](https://github.com/GoEddie/SQLCover))
-
-## Overview
-
-###### This project is based on [SQLCover](https://github.com/GoEddie/SQLCover) with additional features, bug fix and maintenances planned ahead.
-
-> #### Functionalities/Fixes added:
->
-> * Branch Coverage
-> * CLI tools for different platforms 
-> * Detailed documentation for setup
-
-#### Sample
-
-###### [Html Report Sample](https://raw.githack.com/sayantandey/SQLServerCoverage/main/example/Test%20Example/index.html)
+##### Code coverage for SQL Server T-SQL (From [SQLCover](https://github.com/GoEddie/SQLCover)).
 
 **SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
 
-Navigation:
+> This project is based on [SQLCover](https://github.com/GoEddie/SQLCover) with additional features, bug fix and maintenances planned ahead.
+
+## Functionalities/Fixes added:
+
+* Branch Coverage
+* CLI tools for different platforms 
+* Detailed documentation for setup
+
+### [Html Report Sample [Using Report Generator]](https://raw.githack.com/sayantandey/SQLServerCoverage/main/example/Test%20Example/index.html)
+
+____
+
+# Index
+
  - [Download](#download)
  - [Build](#build)
  - [Installation](#installation)
@@ -57,6 +56,7 @@ Read the [build](#build ) section for building the tool:.
 
 
 ## Installation
+
 1. Put the tool in a directory of your preference.
 2. Use the path to that directory as your environment variable 
 
@@ -116,7 +116,9 @@ SQLServerCoverageCore
 
 
 ### 2. Cover T-SQL Script
+
 If you have a script you want to cover then you can call:
+
 ```
 Get-CoverTSql  "SQLServerCoverage-path.dll" "server=servername;integrated security=sspi;"  "database-name" "exec tSQLt.RunAll
 ```
@@ -126,6 +128,7 @@ statement covered or output the full html or xml report.
 
 
 ### 3. Cover anything else
+
 If you want to have more control over what is covered, you can start a coverage session, run whatever queries you like from whatever application and then stop the coverage trace and get the CoverageResults which you can then use to generate a report.
 
 ```
@@ -197,4 +200,3 @@ ___
  ## Tidying up
 
  When we target local sql instances we delete the trace files but when targetting remote instances we are unable to delete the files as we do not (or potentially) do not have access. If this is the case keep an eye on the log directory and remove old "SQLServerCoverage-Trace-*.xel" and "SQLServerCoverage-Trace-*.xem" files. 
-
