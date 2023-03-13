@@ -1,0 +1,15 @@
+ 
+CREATE PROCEDURE sql_server_coverage_test  @arg numeric (1,0)
+AS 
+BEGIN
+	IF @arg=2
+		BEGIN
+			print('If condition')
+		END
+	ELSE
+		 BEGIN
+			EXEC show_message
+		 END
+END
+
+

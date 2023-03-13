@@ -1,0 +1,86 @@
+<CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Summary numSequencePoints="6" visitedSequencePoints="3" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="50" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+  <Modules>
+    <Module hash="4F-26-AE-AF-DB-23-67-62-0A-39-3C-97-3E-DD-BE-8F-8B-84-6E-BD">
+      <FullName>master</FullName>
+      <ModuleName>master</ModuleName>
+      <Files>
+        <File uid="1364199910" fullPath="[dbo].[show_message]" />
+        <File uid="1380199967" fullPath="[dbo].[sql_server_coverage_test]" />
+        <File uid="2123154609" fullPath="[dbo].[sp_MSrepl_startup]" />
+        <File uid="2139154666" fullPath="[dbo].[sp_MScleanupmergepublisher]" />
+      </Files>
+      <Classes>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[dbo].[show_message]</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="100" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[dbo].[show_message]</Name>
+              <FileRef uid="1364199910" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="1" ordinal="1" offset="43" sl="4" sc="1" el="4" ec="26" />
+              </SequencePoints>
+              <BranchPoints />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="3" visitedSequencePoints="2" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="66.66666666666666" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[dbo].[sql_server_coverage_test]</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="66.66666666666666" branchCoverage="50" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="3" visitedSequencePoints="2" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="66.66666666666666" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[dbo].[sql_server_coverage_test]</Name>
+              <FileRef uid="1380199967" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="2" ordinal="1" offset="79" sl="5" sc="1" el="5" ec="10" />
+                <SequencePoint vc="0" uspid="3" ordinal="2" offset="102" sl="7" sc="3" el="7" ec="24" />
+                <SequencePoint vc="1" uspid="4" ordinal="3" offset="152" sl="11" sc="3" el="11" ec="20" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="5" ordinal="1" offset="92" sl="5" path="0" offsetchain="" offsetend="130" />
+                <BranchPoint vc="1" uspid="6" ordinal="2" offset="142" sl="5" path="1" offsetchain="" offsetend="177" />
+              </BranchPoints>
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[dbo].[sp_MSrepl_startup]</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[dbo].[sp_MSrepl_startup]</Name>
+              <FileRef uid="2123154609" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="7" ordinal="1" offset="50" sl="4" sc="4" el="4" ec="39" />
+              </SequencePoints>
+              <BranchPoints />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[dbo].[sp_MScleanupmergepublisher]</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[dbo].[sp_MScleanupmergepublisher]</Name>
+              <FileRef uid="2139154666" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="8" ordinal="1" offset="57" sl="3" sc="4" el="3" ec="48" />
+              </SequencePoints>
+              <BranchPoints />
+            </Method>
+          </Methods>
+        </Class>
+      </Classes>
+    </Module>
+  </Modules>
+</CoverageSession>

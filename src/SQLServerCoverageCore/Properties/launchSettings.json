@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "SQLServerCoverageCore": {
+      "commandName": "Project" 
+    }
+  }
+}

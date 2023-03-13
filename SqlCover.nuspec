@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>SQLServerCoverage</id>
+    <version>$version$</version>
+    <title>SQLServerCoverage</title>
+    <authors>Sayantan Dey</authors>
+    <owners>Sayantan Dey</owners>
+    <licenseUrl>https://github.com/sayantandey/SQLServerCoverage/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/sayantandey/SQLServerCoverage</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>SQL server coverage tool</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2023</copyright>
+    <tags>sql server coverage</tags>
+  </metadata>
+</package>
