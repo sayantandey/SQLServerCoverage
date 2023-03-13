@@ -49,7 +49,7 @@ Read the [build](#build ) section for building the tool:.
   >
   > [Check this source to choose a runtime](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog) 
 
-* Once finished, go to the `<RUNTIME_IDENTIFIER>` (it is whichever runtime you chose) directory that will be created in `SQLServerCoverage\src\SQLServerCoverage\SQLServerCoverage\bin\Release` directory.
+* Once finished, fetch the binary from `/releases/<RUNTIME_IDENTIFIER>` directory.
 
 
 ## Installation
