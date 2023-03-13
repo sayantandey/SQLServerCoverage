@@ -12,6 +12,10 @@
 > * CLI tools for different platforms 
 > * Detailed documentation for setup
 
+#### Sample
+
+###### [Html Report Sample](https://raw.githack.com/sayantandey/SQLServerCoverage/main/example/Test%20Example/index.html)
+
 **SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
 
 Navigation:
