@@ -4,7 +4,7 @@
 * text=auto
 *.md text
 *.md eol=lf merge=union
-example/* linguist-vendored
+example/** linguist-vendored
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
