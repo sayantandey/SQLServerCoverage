@@ -8,7 +8,7 @@
 
 **SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
 
-![](./example/Report Summary.PNG)
+![](./example/Report%20Summary.PNG)
 
 ## Functionalities/Fixes added:
 
@@ -120,7 +120,7 @@ Generate the coverage report as html. It leverages ReportGenerator to Generate I
 SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
 ```
 
-![](./example/Coverage Check CLI.gif)
+![](./example/Coverage%20Check%20CLI.gif)
 
 ___
 
