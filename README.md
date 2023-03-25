@@ -8,9 +8,7 @@
 
 **SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
 
-
-
-
+![](./example/Report Summary.PNG)
 
 ## Functionalities/Fixes added:
 
@@ -23,19 +21,6 @@
 :white_check_mark: Detailed documentation for setup
 
 :white_check_mark: Output SQL Server Generated Messages during Execution
-##### Code coverage for SQL Server T-SQL (From [SQLCover](https://github.com/GoEddie/SQLCover)).
-
-**SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
-
-> This project is based on [SQLCover](https://github.com/GoEddie/SQLCover) with additional features, bug fix and maintenances planned ahead.
-
-## Functionalities/Fixes added:
-
-* Branch Coverage
-* CLI tools for different platforms 
-* Detailed documentation for setup
-
-### [Html Report Sample [Using Report Generator]](https://raw.githack.com/sayantandey/SQLServerCoverage/main/example/Test%20Example/index.html)
 
 ____
 
@@ -76,7 +61,6 @@ Read the [build](#build ) section for building the tool.
 
 
 ## Installation
-
 1. Put the tool in a directory of your preference.
 2. Use the path to that directory as your environment variable 
 
@@ -146,10 +130,7 @@ ___
 
 It can be used with tSQLt framework to check the coverage.
 
-### 2. Cover T-SQL Script
-
 If you have a script you want to cover then you can call:
-
 ```
 SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING>
 ```
@@ -161,8 +142,6 @@ ___
 ### 3. Check Coverage Asynchronously 
 
 > :construction: This will soon be made available to be used from CLI. Now DLL need to be used.
-
-### 3. Cover anything else
 
 If you want to have more control over what is covered, you can start a coverage session, run whatever queries you like from whatever application and then stop the coverage trace and get the CoverageResults which you can then use to generate a report.
 
