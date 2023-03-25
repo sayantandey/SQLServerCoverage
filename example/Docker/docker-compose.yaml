@@ -1,0 +1,15 @@
+version: '2.2'
+
+services:
+  db:
+    build:
+      context: .
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql_coverage
+    environment:
+      MSSQL_SA_PASSWORD: StrONg_P/\$$
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    expose:
+      - '1433'

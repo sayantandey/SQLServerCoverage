@@ -1,5 +1,28 @@
 # SQLServerCoverage 
 
+##### Code coverage for SQL Server T-SQL 
+
+##### Extended From [SQLCover](https://github.com/GoEddie/SQLCover).
+
+> This project is based on [SQLCover](https://github.com/GoEddie/SQLCover) with additional features, bug fix and maintenances planned ahead.
+
+**SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
+
+
+
+
+
+## Functionalities/Fixes added:
+
+:white_check_mark: Generate HTML Report Directly 
+
+:white_check_mark: Branch Coverage
+
+:white_check_mark: CLI tools for different platforms 
+
+:white_check_mark: Detailed documentation for setup
+
+:white_check_mark: Output SQL Server Generated Messages during Execution
 ##### Code coverage for SQL Server T-SQL (From [SQLCover](https://github.com/GoEddie/SQLCover)).
 
 **SQLServerCoverage** is a tool for checking code coverage (both line and branch) of tests executed in SQL sever 2008 and above.
@@ -23,20 +46,17 @@ ____
  - [Installation](#installation)
  - [Usage](#usage)
    - [1. CLI](#1-cli)
-   - [2. Cover T-SQL Script](#2-cover-t-sql-script)
-   - [3. Cover anything else](#3-cover-anything-else)
-   - [4. Redgate DLM Automation Suite](#4-redgate-dlm-automation-suite)
+   - [2. Cover tSQLt Scripts](#2-cover-tsqlt-script)
+   - [3. Check Coverage Asynchronously ](#3-check-coverage-asynchronously )
  - [Tidying up](#tidying-up)
 
 ## Download
 
-Download the latest release from the release package. 
+Download the [latest release](https://github.com/sayantandey/SQLServerCoverage/releases/tag/V1.0) from the released packages. 
 
+**Note:** If you are unable to find a release compatible for your system, consider building it from the codebase using `dotnet` tool . 
 
-
-**Note:** If you are unable to find a release compatible for your system, consider building it from the codebase using dotnet tool . 
-
-Read the [build](#build ) section for building the tool:.
+Read the [build](#build ) section for building the tool.
 
 ## Build 
 
@@ -71,11 +91,11 @@ SQLServerCoverageCore
 
   -v, --verbose             Set output to verbose messages.
 
-  -c, --command             Required. Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest.
+  -c, --command             Required. Choose command to run from: Get-CoverTSql, Get-CoverExe.
 
-  -e, --exportCommand       Required. Choose command to run from:Export-OpenXml, Start-ReportGenerator, Export-Html.
+  -e, --exportCommand       Required. Choose command to run from:Export-OpenXml, Export-Html
 
-  -b, --debug               Prints out more output.
+  -b, --debug               Prints out detailed output.
 
   -p, --requiredParams      Get required parameters for a command
 
@@ -83,7 +103,7 @@ SQLServerCoverageCore
 
   -d, --databaseName        Default Database
 
-  -q, --query               Sql Query, try tSQLt.runAll
+  -q, --query               Sql Query, Ex. tSQLt.runAll
 
   -o, --outputPath          Output Path
 
@@ -96,36 +116,51 @@ SQLServerCoverageCore
   --version                 Display version information.
 ```
 
-##### Example:
+### Example:
 
-1. Generate the coverage report as xml
+##### 1. OpenCover Format
 
-   ```
-   SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
-   ```
+Generate the coverage report as xml
 
-2. Use [ReportGenerator](https://github.com/danielpalme/ReportGenerator) to generate report from xml
+```bash
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+```
 
-   ```
-   cd <OUTPUT_PATH>
-   reportgenerator  "-reports:Coverage.opencover.xml" "-reporttypes:HtmlInline" "-targetdir:."
-   ```
+This will generate the OpenCover xml report in `OUTPUT_PATH` along with the source files in the database it is executed.
 
-   
+##### 2. HTML Format
 
+Generate the coverage report as html. It leverages ReportGenerator to Generate Inline HTML Report of Coverage.
 
+```bash
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+```
+
+![](./example/Coverage Check CLI.gif)
+
+___
+
+### 2. Cover tSQLt Script
+
+> [tSQLt](http://tsqlt.org/) is a unit testing framework for Microsoft SQL Server. 
+
+It can be used with tSQLt framework to check the coverage.
 
 ### 2. Cover T-SQL Script
 
 If you have a script you want to cover then you can call:
 
 ```
-Get-CoverTSql  "SQLServerCoverage-path.dll" "server=servername;integrated security=sspi;"  "database-name" "exec tSQLt.RunAll
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING>
 ```
 
-This will give you a CoverageResults where you can either examine the amount of
-statement covered or output the full html or xml report.
+This will generate a openxml coverage report where you can either examine the amount of statement covered or use the report to generate HTML report using [ReportGenerator](https://github.com/danielpalme/ReportGenerator).
 
+___
+
+### 3. Check Coverage Asynchronously 
+
+> :construction: This will soon be made available to be used from CLI. Now DLL need to be used.
 
 ### 3. Cover anything else
 
@@ -134,63 +169,8 @@ If you want to have more control over what is covered, you can start a coverage 
 ```
 $coverage = new-object SQLServerCoverage.CodeCoverage($connectionString, $database)
 $coverage.Start()
-#DO SOMETHING HERE
+#Execute The SQL scripts
 $coverageResults = $coverage.Stop()
-```
-
-### 4. Redgate DLM Automation Suite 
-
-If you have the DLM automation suite then create a nuget package of your database, deploy the project to a test database and then use the example powershell script (https://github.com/GoEddie/SQLCover/blob/master/example/SQLCover.ps1 and included in the download above):
-
-```
-Get-CoverRedgateCITest "SQLServerCoverage-path.dll" "server=servername;integrated security=sspi;" "nuget-package-path.nupkg" "servername" "database-name"
-```
-
-To create the nupkg of your database you can use sqlci.exe or create a zip of your .sql files
-
- see: https://www.simple-talk.com/blogs/2014/12/18/using\_sql\_release\_with\_powershell/
-
-The Get-CoverRedgateCITest will return an array with two objects in, the first object is a:
-
-```
-RedGate.SQLRelease.Compare.SchemaTesting.TestResults
-```
-
-The second object is a:
-
-```
-SQLServerCoverage.CoverageResult
-```
-
-This has two public properties:
-
-```
-public long StatementCount;
-public long CoveredStatementCount;
-```
-
-It also has two public methods:
-
-```
-public string Html()
-```
-
-This creates a basic html report to view the code coverage, highlighting the lines of code in the database which have been covered and:
-
-```
-public string OpenCoverXml()
-```
-
-which creates an xml file in the OpenCoverageXml format which can be converted
-into a very pretty looking report using reportgenerator: https://github.com/danielpalme/ReportGenerator
-
-For a complete example see:
-
-```
-$results = Get-CoverRedgateCITest "path\to\SQLServerCoverage.dll" "server=.;integrated security=sspi;initial catalog=tSQLt_Example" "tSQLt_Example"
-    Export-DlmDatabaseTestResults $results[0] -OutputFile c:\temp\junit.xml -force
-    Export-OpenXml $results[1] "c:\output\path\for\xml\results"
-    Start-ReportGenerator "c:\output\path\for\xml\results" "c:\path\to\reportgenerator.exe"
 ```
 
 

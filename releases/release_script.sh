@@ -1,5 +1,5 @@
-platforms=("win-x64" "win-x86" "linux-x64" "osx-x64")
+platforms=("win10-x64" "ubuntu.20.04-x64" "linux-x64" "osx-x64")
 for ver in ${platforms[@]}; do
-  dotnet publish ../src/SQLServerCoverageCore/SQLServerCoverageCore.csproj -c Release -r $ver -o $ver --sc true -p:PublishSingleFile=true
-  echo "Genertaed distribution for $ver"
+  dotnet publish ../src/SQLServerCoverageCore/SQLServerCoverageCore.csproj -c Release -r $ver -o $ver/SQLServerCoverage --sc true 
+  echo ">>  Generated distribution for $ver"
 done

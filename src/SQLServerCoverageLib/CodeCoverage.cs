@@ -125,15 +125,13 @@ namespace SQLServerCoverage
 
             }
 
-            Debug("Starting Code Coverage...Done");
-
             Debug("Executing Command: {0}", command);
 
             var sqlExceptions = new List<string>();
 
             try
             {
-                _database.Execute(command, timeOut); //todo read messages or rowcounts or something
+                _database.Execute(command, timeOut, true);  
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -155,11 +153,10 @@ namespace SQLServerCoverage
             try
             {
                 var rawEvents = StopInternal();
-                Debug("Stopping Code Coverage...done");
 
                 Debug("Getting Code Coverage Result");
                 GenerateResults(_excludeFilter, rawEvents, sqlExceptions, $"SQLServerCoverage result of running '{command}'");
-                Debug("Getting Code Coverage Result..done");
+                Debug("Result generated");
             }
             catch (Exception e)
             {

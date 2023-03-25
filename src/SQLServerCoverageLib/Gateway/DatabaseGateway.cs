@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Xml;
 
@@ -20,18 +21,19 @@ namespace SQLServerCoverage.Gateway
         }
         public DatabaseGateway(string connectionString, string databaseName)
         {
-            TimeOut = 30;
+            TimeOut = 60;
             _connectionString = connectionString;
             _databaseName = databaseName;
             _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
         }
-        
+
         public virtual string GetString(string query)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                conn.ChangeDatabase(_databaseName);
+                if (!string.IsNullOrEmpty(_databaseName))
+                    conn.ChangeDatabase(_databaseName);
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = query;
@@ -84,7 +86,7 @@ namespace SQLServerCoverage.Gateway
                         {
                             XmlDocument xml = new XmlDocument();
                             xml.LoadXml(reader[0].ToString());
-                             
+
                             var root = xml.SelectNodes("/event").Item(0);
 
                             var objectId = xml.SelectNodes("/event/data[@name='object_id']").Item(0);
@@ -92,7 +94,7 @@ namespace SQLServerCoverage.Gateway
                             var offsetEnd = xml.SelectNodes("/event/data[@name='offset_end']").Item(0);
 
                             root.RemoveAll();
-                                 
+
                             root.AppendChild(objectId);
                             root.AppendChild(offset);
                             root.AppendChild(offsetEnd);
@@ -109,19 +111,30 @@ namespace SQLServerCoverage.Gateway
             }
         }
 
-        public void Execute(string command, int timeOut)
+        public void Execute(string command, int timeOut, bool isQuery = false)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
                 conn.ChangeDatabase(_databaseName);
+                if (isQuery)
+                    conn.InfoMessage += new SqlInfoMessageEventHandler(printSQLExecutionMessage);
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = command;
                     cmd.CommandTimeout = timeOut;
                     cmd.ExecuteNonQuery();
                 }
+                conn.Close();
+                conn.Dispose();
             }
+        }
+
+        void printSQLExecutionMessage(object sender, SqlInfoMessageEventArgs e)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(e.Message);
+            Console.ResetColor();
         }
     }
 }
