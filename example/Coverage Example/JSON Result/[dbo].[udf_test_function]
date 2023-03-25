@@ -1,0 +1,9 @@
+
+CREATE FUNCTION udf_test_function ()
+RETURNS DATETIME
+AS
+BEGIN
+	RETURN GETDATE()
+END
+
+

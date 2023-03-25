@@ -6,17 +6,24 @@ using System.IO;
 namespace SQLServerCoverage.Core
 {
     class Program
+
     {
+
+        // Default path of result storage
+        public const string DefaultLocation = "SQL Server Coverage Report";
+        // Default path of result storage
+        public const string DefaultCoverageFileName = "SQLServerCoverage";
+
         public class Options
         {
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
             public bool Verbose { get; set; }
 
-            [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest.")]
+            [Option('c', "command", Required = true, HelpText = "Choose command to run from: Get-CoverTSql, Get-CoverExe.")]
             public string Command { get; set; }
-            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Start-ReportGenerator, Export-Html.")]
+            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Export-Html")]
             public string ExportCommand { get; set; }
-            [Option('b', "debug", Required = false, HelpText = "Prints out more output.")]
+            [Option('b', "debug", Required = false, HelpText = "Prints out detailed output.")]
             public bool Debug { get; set; }
             [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
             public bool GetRequiredParameters { get; set; }
@@ -24,7 +31,7 @@ namespace SQLServerCoverage.Core
             public string ConnectionString { get; set; }
             [Option('d', "databaseName", Required = false, HelpText = "Default Database")]
             public string databaseName { get; set; }
-            [Option('q', "query", Required = false, HelpText = "Sql Query, try tSQLt.runAll")]
+            [Option('q', "query", Required = false, HelpText = "Sql Query, Ex. tSQLt.runAll")]
             public string Query { get; set; }
             [Option('o', "outputPath", Required = false, HelpText = "Output Path")]
             public string OutputPath { get; set; }
@@ -32,19 +39,19 @@ namespace SQLServerCoverage.Core
             public string Args { get; set; }
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
+
         }
         private enum CommandType
         {
             GetCoverTSql,
             GetCoverExe,
-            GetCoverRedgateCITest,
             ExportOpenXml,
-            StartReportGenerator,
             ExportHtml,
+            ExportCobertura,
             Unknown
         }
         /// <summary>
-        /// should minic arguments from example\SQLCover.ps1
+        /// should mimic arguments from example\SQLCover.ps1
         /// run by `dotnet run -- -c Get-CoverTSql -r`
         /// `dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=yourStrong(!)Password" -d DatabaseWithTests -q "tSQLt.runAll" -p TestCoverageOpenXml`
         /// </summary>
@@ -86,13 +93,8 @@ namespace SQLServerCoverage.Core
                                 "exeName",
                                 "args"};
                                break;
-                           case "Get-CoverRedgateCITest":
-                               cType = CommandType.GetCoverRedgateCITest;
-                               requiredParameters = new string[]{
-                                "outputPath"};
-                               break;
                            default:
-                               Console.WriteLine("Command:" + o.Command + " is not supported");
+                               Console.Error.WriteLine("Command:" + o.Command + " is not supported");
                                break;
                        }
 
@@ -103,22 +105,19 @@ namespace SQLServerCoverage.Core
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
-                           case "Start-ReportGenerator":
-                               eType = CommandType.StartReportGenerator;
-                               requiredExportParameters = new string[]{"outputPath",
-                                "reportGeneratorPath"};
-                               break;
                            case "Export-Html":
                                eType = CommandType.ExportHtml;
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                            default:
-                               Console.WriteLine("ExportCommand:" + o.ExportCommand + " is not supported");
+                               // coverage result will be saved as json for future reference
+                               requiredExportParameters = new string[]{
+                                "outputPath"};
                                break;
                        }
 
-                       var validParams = eType != CommandType.Unknown && cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
+                       var validParams = cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
                        validParams = validParams ? validateRequired(o, requiredExportParameters) : validParams;
 
                        if (validParams)
@@ -144,14 +143,6 @@ namespace SQLServerCoverage.Core
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
                                        results = coverage.CoverExe(o.ExeName, o.Args);
                                        break;
-                                   case CommandType.GetCoverRedgateCITest:
-                                       //    coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                       //    coverage.Start();
-                                       // run Redgate SQLRelease Module
-
-                                       //    results = coverage.Stop();
-                                       Console.WriteLine(cType.ToString() + " is not YET supported");
-                                       break;
                                }
                                if (coverage != null && results != null)
                                {
@@ -168,7 +159,7 @@ namespace SQLServerCoverage.Core
                                    }
                                    else
                                    {
-                                       outputPath = "Coverage" + Path.DirectorySeparatorChar;
+                                       outputPath = DefaultLocation + Path.DirectorySeparatorChar + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.DirectorySeparatorChar;
                                        if (!Directory.Exists(outputPath))
                                        {
                                            Directory.CreateDirectory(outputPath);
@@ -177,18 +168,27 @@ namespace SQLServerCoverage.Core
                                    switch (eType)
                                    {
                                        case CommandType.ExportOpenXml:
-                                           resultString = results.OpenCoverXml();
-                                           results.SaveResult(outputPath + "Coverage.opencover.xml", resultString);
+                                           resultString = results.ToOpenCoverXml();
+                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", resultString);
                                            results.SaveSourceFiles(outputPath);
                                            break;
                                        case CommandType.ExportHtml:
-                                           resultString = results.Html();
-                                           results.SaveResult(outputPath + "Coverage.html", resultString);
+                                           var openCoverXml = results.ToOpenCoverXml();
+                                           var openCoverFile = $"{outputPath}{DefaultCoverageFileName}.opencover.xml";
+                                           results.SaveResult(openCoverFile, openCoverXml);
+                                           results.SaveSourceFiles(outputPath);
+                                           results.ToHtml(outputPath, outputPath, openCoverFile);
+                                           break;
+                                       case CommandType.ExportCobertura:
+                                           // TODO Use Report Generator to generate from Opencover
+                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.cobertura.xml", resultString);
                                            results.SaveSourceFiles(outputPath);
                                            break;
-                                       // thinking this should be separate from program, called directly from ci/cd
-                                       case CommandType.StartReportGenerator:
-                                           Console.WriteLine(eType.ToString() + " is not YET supported");
+                                       default:
+                                           Console.Error.WriteLine("Invalid export command provided. Saving Result as Json");
+                                           resultString = results.ToJson();
+                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.json", resultString);
+                                           results.SaveSourceFiles(outputPath);
                                            break;
                                    }
                                }
@@ -197,6 +197,13 @@ namespace SQLServerCoverage.Core
                    });
         }
 
+        /// <summary>
+        /// Validate all the required arguments and print error message 
+        /// </summary>
+        /// <param name="o"> input arguments</param>
+        /// <param name="requiredParameters">list of required parameters</param>
+        /// <param name="export"></param>
+        /// <returns></returns>
         private static bool validateRequired(Options o, string[] requiredParameters, bool export = false)
         {
             var valid = true;
@@ -208,21 +215,21 @@ namespace SQLServerCoverage.Core
                     case "connectionString":
                         if (string.IsNullOrWhiteSpace(o.ConnectionString))
                         {
-                            Console.WriteLine("connectionString" + requiredString);
+                            Console.Error.WriteLine("connectionString" + requiredString);
                             valid = false;
                         }
                         break;
                     case "databaseName":
                         if (string.IsNullOrWhiteSpace(o.databaseName))
                         {
-                            Console.WriteLine("databaseName" + requiredString);
+                            Console.Error.WriteLine("databaseName" + requiredString);
                             valid = false;
                         }
                         break;
                     case "query":
                         if (string.IsNullOrWhiteSpace(o.Query))
                         {
-                            Console.WriteLine("query" + requiredString);
+                            Console.Error.WriteLine("query" + requiredString);
                             valid = false;
                         }
                         break;
@@ -231,20 +238,20 @@ namespace SQLServerCoverage.Core
                         {
                             if (!Directory.Exists(o.OutputPath))
                             {
-                                Console.WriteLine("outputPath:" + o.OutputPath + " is not a valid directory.");
-                                valid = false;
+                                Console.Error.WriteLine("outputPath:" + o.OutputPath + " is not a valid directory.");
+                                return false;
                             }
 
                         }
                         else
                         {
-                            o.OutputPath = "";
+                            o.OutputPath = string.Empty;
                         }
                         break;
                     case "args":
                         if (string.IsNullOrWhiteSpace(o.Args))
                         {
-                            Console.WriteLine("args" + requiredString);
+                            Console.Error.WriteLine("args" + requiredString);
                             valid = false;
                         }
                         break;

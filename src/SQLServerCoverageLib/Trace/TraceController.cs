@@ -16,7 +16,7 @@ namespace SQLServerCoverage.Trace
         {
             Gateway = gateway;
             DatabaseId = gateway.GetString(string.Format("select db_id('{0}')", databaseName));
-            Name = string.Format("SQLServerCoverage-Trace-{0}", Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", ""));
+            Name = string.Format($"SQLServerCoverage-Trace-{Guid.NewGuid().ToString()}");
         }
 
         public abstract void Start();
@@ -25,7 +25,7 @@ namespace SQLServerCoverage.Trace
         public abstract void Drop();
 
 
-        protected void RunScript(string query, string error, int timeout =30)
+        protected void RunScript(string query, string error, int timeout = 60)
         {
             var script = GetScript(query);
             try

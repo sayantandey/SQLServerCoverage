@@ -1,7 +1,0 @@
-CREATE PROCEDURE show_message
-AS
-BEGIN
-	print 'another procedure'
-END
-
-

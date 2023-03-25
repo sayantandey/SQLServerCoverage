@@ -8,6 +8,7 @@
     <ToolCommandName>SQLServerCoverage</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <OutputType>Exe</OutputType>
+	<InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +16,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.1.1" />
     <PackageReference Include="Microsoft.SqlServer.DACFx" Version="150.4573.2" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\SQLServerCoverageLib\SQLServerCoverageLib.csproj" />
   </ItemGroup>
