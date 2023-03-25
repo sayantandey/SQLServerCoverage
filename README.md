@@ -37,7 +37,7 @@ ____
 
 ## Download
 
-Download the [latest release](https://github.com/sayantandey/SQLServerCoverage/releases/tag/V1.0) from the released packages. 
+Download the [latest release](https://github.com/sayantandey/SQLServerCoverage/releases/latest) from the released packages. 
 
 **Note:** If you are unable to find a release compatible for your system, consider building it from the codebase using `dotnet` tool . 
 
