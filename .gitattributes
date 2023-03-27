@@ -4,7 +4,7 @@
 * text=auto
 *.md text
 *.md eol=lf merge=union
-*.html linguist-detectable=false 
+*.html linguist-generated
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
