@@ -1,0 +1,13 @@
+CREATE PROCEDURE sp_sql_server_coverage @arg NUMERIC(1, 0)
+AS
+BEGIN
+	IF @arg = 2
+	BEGIN
+		PRINT ('If condition')
+	END
+	ELSE
+	BEGIN
+		EXEC sp_test_proc
+	END
+END
+

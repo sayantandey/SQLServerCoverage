@@ -87,48 +87,6 @@ namespace SQLServerCoverage
 
         }
 
-        public string RawXml()
-        {
-            var statements = _batches.Sum(p => p.StatementCount);
-            var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
-
-            var builder = new StringBuilder();
-            builder.AppendFormat("<CodeCoverage StatementCount=\"{0}\" CoveredStatementCount=\"{1}\">\r\n", statements,
-                coveredStatements);
-
-            foreach (var batch in _batches)
-            {
-                builder.AppendFormat("<Batch Object=\"{0}\" StatementCount=\"{1}\" CoveredStatementCount=\"{2}\">",
-                    SecurityElement.Escape(batch.ObjectName), batch.StatementCount, batch.CoveredStatementCount);
-                builder.AppendFormat("<Text>\r\n![CDATA[{0}]]</Text>", XmlTextEncoder.Encode(batch.Text));
-                foreach (var statement in batch.Statements)
-                {
-                    builder.AppendFormat(
-                        "\t<Statement HitCount=\"{0}\" Offset=\"{1}\" Length=\"{2}\" CanBeCovered=\"{3}\"></Statement>",
-                        statement.HitCount, statement.Offset, statement.Length, statement.IsCoverable);
-                }
-
-                builder.Append("</Batch>");
-            }
-
-            if (_sqlExceptions.Count > 0)
-            {
-                builder.Append("<SqlExceptions>");
-
-                foreach (var e in _sqlExceptions)
-                {
-                    builder.AppendFormat("\t<SqlException>{0}</SqlException>", XmlTextEncoder.Encode(e));
-                }
-
-                builder.Append("</SqlExceptions>");
-            }
-
-            builder.Append("\r\n</CodeCoverage>");
-            var s = builder.ToString();
-
-            return s;
-        }
-
         public void SaveResult(string path, string resultString)
         {
             File.WriteAllText(path, resultString);
@@ -156,9 +114,39 @@ namespace SQLServerCoverage
         /// <summary>
         /// Use ReportGenerator Tool to Convert Open XML To Inline HTML
         /// </summary>
-        /// <param name="targetDirectory">where the html needs to be saved</param>
+        /// <param name="targetDirectory">diretory where report will be generated</param>
+        /// <param name="sourceDirectory">source directory</param>
+        /// <param name="openCoverFile">source path of open cover report</param>
         /// <returns></returns>
         public void ToHtml(string targetDirectory, string sourceDirectory, string openCoverFile)
+        {
+            var reportType = "HtmlInline";
+            generateReport(targetDirectory, sourceDirectory, openCoverFile, reportType);
+        }
+
+        /// <summary>
+        /// Use ReportGenerator Tool to Convert Open XML To Cobertura
+        /// </summary>
+        /// <param name="targetDirectory">diretory where report will be generated</param>
+        /// <param name="sourceDirectory">source directory</param>
+        /// <param name="openCoverFile">source path of open cover report</param>
+        /// <returns></returns>
+        public void ToCobertura(string targetDirectory, string sourceDirectory, string openCoverFile)
+        {
+            var reportType = "Cobertura";
+            generateReport(targetDirectory, sourceDirectory, openCoverFile, reportType);
+        }
+
+
+        /// <summary>
+        /// Use ReportGenerator Tool to Convert Open Cover XML To Required Report Type
+        /// </summary>
+        /// TODO : Use Enum for Report Type
+        /// <param name="targetDirectory">diretory where report will be generated</param>
+        /// <param name="sourceDirectory">source directory</param>
+        /// <param name="openCoverFile">source path of open cover report</param>
+        /// <param name="reportType">type of report to be generated</param>
+        public void generateReport(string targetDirectory, string sourceDirectory, string openCoverFile, string reportType)
         {
             var reportGenerator = new Generator();
             var reportConfiguration = new ReportConfigurationBuilder().Create(new Dictionary<string, string>()
@@ -166,18 +154,17 @@ namespace SQLServerCoverage
                                                 { "REPORTS", openCoverFile },
                                                 { "TARGETDIR", targetDirectory },
                                                 { "SOURCEDIRS", sourceDirectory },
-                                                { "REPORTTYPES", "HtmlInline"},
+                                                { "REPORTTYPES", reportType},
                                                 { "VERBOSITY", "Info" },
 
                                             });
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"Report from : '{Path.GetFullPath(openCoverFile)}' \n will be used to generate HTML report in: {Path.GetFullPath(targetDirectory)} directory");
+            Console.WriteLine($"Report from : '{Path.GetFullPath(openCoverFile)}' \n will be used to generate {reportType} report in: {Path.GetFullPath(targetDirectory)} directory");
             Console.ResetColor();
             var isGenerated = reportGenerator.GenerateReport(reportConfiguration);
             if (!isGenerated)
-                Console.WriteLine("Error Generating HTML Report.Check logs for more details");
+                Console.WriteLine($"Error Generating {reportType} Report.Check logs for more details");
         }
-
 
         public static OpenCoverOffsets GetOffsets(Statement statement, string text)
             => GetOffsets(statement.Offset, statement.Length, text);
