@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage line-rate="0.8571428571428571" branch-rate="0.5" lines-covered="6" lines-valid="7" branches-covered="1" branches-valid="2" complexity="NaN" version="0" timestamp="1680198897">
+  <sources />
+  <packages>
+    <package name="sql_server_coverage" line-rate="0.8571428571428571" branch-rate="0.5" complexity="NaN">
+      <classes>
+        <class name="[dbo].[sp_sql_server_coverage]" filename="[dbo].[sp_sql_server_coverage]" line-rate="0.6666666666666666" branch-rate="0.5" complexity="NaN">
+          <methods>
+            <method name="].[sp_sql_server_coverage]" signature="" line-rate="0.6666666666666666" branch-rate="0.5" complexity="NaN">
+              <lines>
+                <line number="4" hits="1" branch="true" condition-coverage="50% (1/2)" />
+                <line number="6" hits="0" branch="false" />
+                <line number="10" hits="1" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="4" hits="1" branch="true" condition-coverage="50% (1/2)" />
+            <line number="6" hits="0" branch="false" />
+            <line number="10" hits="1" branch="false" />
+          </lines>
+        </class>
+        <class name="[dbo].[sp_test_proc]" filename="[dbo].[sp_test_proc]" line-rate="1" branch-rate="1" complexity="NaN">
+          <methods>
+            <method name="].[sp_test_proc]" signature="" line-rate="1" branch-rate="1" complexity="NaN">
+              <lines>
+                <line number="4" hits="1" branch="false" />
+                <line number="5" hits="1" branch="false" />
+                <line number="6" hits="1" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="4" hits="1" branch="false" />
+            <line number="5" hits="1" branch="false" />
+            <line number="6" hits="1" branch="false" />
+          </lines>
+        </class>
+        <class name="[dbo].[udf_test_function]" filename="[dbo].[udf_test_function]" line-rate="1" branch-rate="1" complexity="NaN">
+          <methods>
+            <method name="].[udf_test_function]" signature="" line-rate="1" branch-rate="1" complexity="NaN">
+              <lines>
+                <line number="6" hits="1" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="6" hits="1" branch="false" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

@@ -1,0 +1,8 @@
+CREATE PROCEDURE sp_test_proc
+AS
+BEGIN
+	PRINT 'test stored procedure'
+	print CURRENT_USER
+	PRINT dbo.udf_test_function()
+END
+

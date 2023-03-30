@@ -21,12 +21,13 @@ namespace SQLServerCoverage.Core
 
             [Option('c', "command", Required = true, HelpText = "Choose command to run from: Get-CoverTSql, Get-CoverExe.")]
             public string Command { get; set; }
-            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Export-Html")]
+            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Export-Html, Export-Cobertura")]
             public string ExportCommand { get; set; }
             [Option('b', "debug", Required = false, HelpText = "Prints out detailed output.")]
             public bool Debug { get; set; }
             [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
             public bool GetRequiredParameters { get; set; }
+            [JsonIgnore]
             [Option('k', "connectionString", Required = false, HelpText = "Connection String to the sql server")]
             public string ConnectionString { get; set; }
             [Option('d', "databaseName", Required = false, HelpText = "Default Database")]
@@ -110,6 +111,11 @@ namespace SQLServerCoverage.Core
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
+                           case "Export-Cobertura":
+                               eType = CommandType.ExportCobertura;
+                               requiredExportParameters = new string[]{
+                                "outputPath"};
+                               break;
                            default:
                                // coverage result will be saved as json for future reference
                                requiredExportParameters = new string[]{
@@ -149,6 +155,8 @@ namespace SQLServerCoverage.Core
                                    Console.WriteLine(":::Running exportCommand" + eType.ToString() + ":::");
                                    var resultString = "";
                                    var outputPath = "";
+                                   string openCoverXml = null;
+
                                    if (!string.IsNullOrWhiteSpace(o.OutputPath))
                                    {
                                        outputPath = o.OutputPath;
@@ -165,24 +173,27 @@ namespace SQLServerCoverage.Core
                                            Directory.CreateDirectory(outputPath);
                                        }
                                    }
+                                   var openCoverFile = $"{outputPath}{DefaultCoverageFileName}.opencover.xml";
                                    switch (eType)
                                    {
                                        case CommandType.ExportOpenXml:
-                                           resultString = results.ToOpenCoverXml();
-                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", resultString);
+                                           openCoverXml = results.ToOpenCoverXml();
+                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", openCoverXml);
                                            results.SaveSourceFiles(outputPath);
                                            break;
                                        case CommandType.ExportHtml:
-                                           var openCoverXml = results.ToOpenCoverXml();
-                                           var openCoverFile = $"{outputPath}{DefaultCoverageFileName}.opencover.xml";
+                                           openCoverXml = results.ToOpenCoverXml();
                                            results.SaveResult(openCoverFile, openCoverXml);
                                            results.SaveSourceFiles(outputPath);
+
                                            results.ToHtml(outputPath, outputPath, openCoverFile);
                                            break;
                                        case CommandType.ExportCobertura:
-                                           // TODO Use Report Generator to generate from Opencover
-                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.cobertura.xml", resultString);
+                                           openCoverXml = results.ToOpenCoverXml();
+                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", openCoverXml);
                                            results.SaveSourceFiles(outputPath);
+
+                                           results.ToCobertura(outputPath, outputPath, openCoverFile);
                                            break;
                                        default:
                                            Console.Error.WriteLine("Invalid export command provided. Saving Result as Json");
