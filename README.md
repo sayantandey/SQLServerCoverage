@@ -22,6 +22,7 @@
 
 :white_check_mark: Output SQL Server Generated Messages during Execution
 
+:white_check_mark: Generate latest Cobertura Report using 0.4 DTD
 ____
 
 # Index
@@ -77,7 +78,7 @@ SQLServerCoverageCore
 
   -c, --command             Required. Choose command to run from: Get-CoverTSql, Get-CoverExe.
 
-  -e, --exportCommand       Required. Choose command to run from:Export-OpenXml, Export-Html
+  -e, --exportCommand       Required. Choose command to run from:Export-OpenXml, Export-Html,  Export-Cobertura
 
   -b, --debug               Prints out detailed output.
 
