@@ -41,8 +41,8 @@ name: .NET Core Desktop
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+#  pull_request:
+ #   branches: [ "main" ]
 
 env:
     APP_NAME: SQLServerCoverage 
@@ -89,7 +89,7 @@ jobs:
       - name: Releasing github package for ${{ matrix.os }}  
         uses: softprops/action-gh-release@v1
         with:
-          name: ReportGenerator_${{ env.Version }}
+          name: ReportGenerator_${{ env.Version }}_${{ matrix.os }}
           body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
           tag_name: v${{ env.APP_VERSION }}
           files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
