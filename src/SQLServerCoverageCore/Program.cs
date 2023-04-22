@@ -1,7 +1,10 @@
 ﻿using CommandLine;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition.Primitives;
 using System.IO;
+using System.Linq;
 
 namespace SQLServerCoverage.Core
 {
@@ -19,44 +22,58 @@ namespace SQLServerCoverage.Core
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
             public bool Verbose { get; set; }
 
-            [Option('c', "command", Required = true, HelpText = "Choose command to run from: Get-CoverTSql, Get-CoverExe.")]
+            [Option('c', "command", Required = true, HelpText = "Choose command to run: Currently only Get-CoverTSql available")]
             public string Command { get; set; }
-            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Export-Html, Export-Cobertura")]
-            public string ExportCommand { get; set; }
+
+            [Option('e', "exportType", Required = true, HelpText = "Choose export options : Export-OpenXml, Export-Html, Export-Cobertura")]
+            public string ExportType { get; set; }
+
             [Option('b', "debug", Required = false, HelpText = "Prints out detailed output.")]
             public bool Debug { get; set; }
+
             [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
             public bool GetRequiredParameters { get; set; }
+
             [JsonIgnore]
-            [Option('k', "connectionString", Required = false, HelpText = "Connection String to the sql server")]
+            [Option('k', "connectionString", Required = false, HelpText = "Connection String to the SQL server")]
             public string ConnectionString { get; set; }
+
             [Option('d', "databaseName", Required = false, HelpText = "Default Database")]
             public string databaseName { get; set; }
-            [Option('q', "query", Required = false, HelpText = "Sql Query, Ex. tSQLt.runAll")]
+
+            [Option('q', "query", Required = false, HelpText = "Sql Query, Ex. tSQLt.runAll OR your custom test executor")]
             public string Query { get; set; }
-            [Option('o', "outputPath", Required = false, HelpText = "Output Path")]
+
+            [Option('o', "outputPath", Required = false, HelpText = "Output Path of The Export Result")]
             public string OutputPath { get; set; }
-            [Option('a', "args", Required = false, HelpText = "Arguments for an exe file")]
-            public string Args { get; set; }
-            [Option('t', "exeName", Required = false, HelpText = "executable name")]
-            public string ExeName { get; set; }
+
+            [Option('t', "timeout", Required = false, HelpText = "Wait time in Seconds before terminating the attempt to execute test SQL command")]
+            public int TimeOut { get; set; }
+
+            [Option('i', "ignore", Required = false, HelpText = "Space separated list of database objects to ignore. Regex Accepted. Case sensitive depending on collation" +
+                                                                 "Ex.\"sp_dummy_proc* sp_test_proc\"")]
+            public string IgnoreObjects { get; set; }
 
         }
         private enum CommandType
         {
             GetCoverTSql,
-            GetCoverExe,
+            Unknown
+        }
+
+        private enum ExportType
+        {
             ExportOpenXml,
             ExportHtml,
             ExportCobertura,
             Unknown
         }
         /// <summary>
-        /// should mimic arguments from example\SQLCover.ps1
+        /// 
         /// run by `dotnet run -- -c Get-CoverTSql -r`
         /// `dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=yourStrong(!)Password" -d DatabaseWithTests -q "tSQLt.runAll" -p TestCoverageOpenXml`
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">Arguments required for SQLServerCoverage to execute</param>
         static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -74,7 +91,7 @@ namespace SQLServerCoverage.Core
                            Console.WriteLine(":::Running SQLServerCoverageCore:::");
                        }
                        var cType = CommandType.Unknown;
-                       var eType = CommandType.Unknown;
+                       var eType = ExportType.Unknown;
                        string[] requiredParameters = null;
                        string[] requiredExportParameters = null;
                        switch (o.Command)
@@ -86,52 +103,45 @@ namespace SQLServerCoverage.Core
                                 "databaseName",
                                 "query"};
                                break;
-                           case "Get-CoverExe":
-                               cType = CommandType.GetCoverExe;
-                               requiredParameters = new string[]{
-                                "connectionString",
-                                "databaseName",
-                                "exeName",
-                                "args"};
-                               break;
                            default:
                                Console.Error.WriteLine("Command:" + o.Command + " is not supported");
                                break;
                        }
 
-                       switch (o.ExportCommand)
+                       switch (o.ExportType)
                        {
                            case "Export-OpenXml":
-                               eType = CommandType.ExportOpenXml;
+                               eType = ExportType.ExportOpenXml;
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                            case "Export-Html":
-                               eType = CommandType.ExportHtml;
+                               eType = ExportType.ExportHtml;
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                            case "Export-Cobertura":
-                               eType = CommandType.ExportCobertura;
+                               eType = ExportType.ExportCobertura;
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                            default:
-                               // coverage result will be saved as json for future reference
+                               // coverage result will be serialized as json for future reference
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                        }
 
-                       var validParams = cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
-                       validParams = validParams ? validateRequired(o, requiredExportParameters) : validParams;
+                       bool isValid = (cType != CommandType.Unknown)
+                                       && validateRequired(o, requiredParameters)
+                                       && validateRequired(o, requiredExportParameters, isExportParams: true);
 
-                       if (validParams)
+                       if (isValid)
                        {
                            if (o.GetRequiredParameters)
                            {
                                Console.WriteLine(o.Command + " requiredParameters are:" + string.Join(',', requiredParameters));
-                               Console.WriteLine(o.ExportCommand + " requiredParameters are:" + string.Join(',', requiredExportParameters));
+                               Console.WriteLine(o.ExportType + " requiredParameters are:" + string.Join(',', requiredExportParameters));
                            }
                            else
                            {
@@ -142,17 +152,14 @@ namespace SQLServerCoverage.Core
                                switch (cType)
                                {
                                    case CommandType.GetCoverTSql:
-                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                       results = coverage.Cover(o.Query);
+                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName, o.IgnoreObjects?.Split(), true, o.Debug);
+                                       results = coverage.Cover(o.Query, Math.Max(o.TimeOut, 0));
                                        break;
-                                   case CommandType.GetCoverExe:
-                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                       results = coverage.CoverExe(o.ExeName, o.Args);
-                                       break;
+
                                }
                                if (coverage != null && results != null)
                                {
-                                   Console.WriteLine(":::Running exportCommand" + eType.ToString() + ":::");
+                                   Console.WriteLine(":::Exporting Result with " + eType.ToString() + ":::");
                                    var resultString = "";
                                    var outputPath = "";
                                    string openCoverXml = null;
@@ -176,27 +183,27 @@ namespace SQLServerCoverage.Core
                                    var openCoverFile = $"{outputPath}{DefaultCoverageFileName}.opencover.xml";
                                    switch (eType)
                                    {
-                                       case CommandType.ExportOpenXml:
+                                       case ExportType.ExportOpenXml:
                                            openCoverXml = results.ToOpenCoverXml();
-                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", openCoverXml);
+                                           results.SaveResult(openCoverFile, openCoverXml);
                                            results.SaveSourceFiles(outputPath);
                                            break;
-                                       case CommandType.ExportHtml:
+                                       case ExportType.ExportHtml:
                                            openCoverXml = results.ToOpenCoverXml();
                                            results.SaveResult(openCoverFile, openCoverXml);
                                            results.SaveSourceFiles(outputPath);
 
                                            results.ToHtml(outputPath, outputPath, openCoverFile);
                                            break;
-                                       case CommandType.ExportCobertura:
+                                       case ExportType.ExportCobertura:
                                            openCoverXml = results.ToOpenCoverXml();
-                                           results.SaveResult(outputPath + $"{DefaultCoverageFileName}.opencover.xml", openCoverXml);
+                                           results.SaveResult(openCoverFile, openCoverXml);
                                            results.SaveSourceFiles(outputPath);
 
                                            results.ToCobertura(outputPath, outputPath, openCoverFile);
                                            break;
                                        default:
-                                           Console.Error.WriteLine("Invalid export command provided. Saving Result as Json");
+                                           Console.Error.WriteLine("Invalid export option provided. Saving Result as Json");
                                            resultString = results.ToJson();
                                            results.SaveResult(outputPath + $"{DefaultCoverageFileName}.json", resultString);
                                            results.SaveSourceFiles(outputPath);
@@ -213,12 +220,11 @@ namespace SQLServerCoverage.Core
         /// </summary>
         /// <param name="o"> input arguments</param>
         /// <param name="requiredParameters">list of required parameters</param>
-        /// <param name="export"></param>
         /// <returns></returns>
-        private static bool validateRequired(Options o, string[] requiredParameters, bool export = false)
+        private static bool validateRequired(Options o, string[] requiredParameters, bool isExportParams = false)
         {
             var valid = true;
-            var requiredString = export ? " is required for this exportCommand" : " is required for this command";
+            var requiredString = isExportParams ? " is required for this exportCommand" : " is required for this command";
             foreach (var param in requiredParameters)
             {
                 switch (param)
@@ -257,21 +263,6 @@ namespace SQLServerCoverage.Core
                         else
                         {
                             o.OutputPath = string.Empty;
-                        }
-                        break;
-                    case "args":
-                        if (string.IsNullOrWhiteSpace(o.Args))
-                        {
-                            Console.Error.WriteLine("args" + requiredString);
-                            valid = false;
-                        }
-                        break;
-
-                    case "exeName":
-                        if (string.IsNullOrWhiteSpace(o.ExeName))
-                        {
-                            Console.WriteLine("exeName" + requiredString);
-                            valid = false;
                         }
                         break;
 

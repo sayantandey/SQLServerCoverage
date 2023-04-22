@@ -39,7 +39,7 @@ namespace SQLServerCoverage.Source
         }
 
 
-public IEnumerable<Batch> GetBatches(List<string> objectFilter)
+        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
@@ -61,7 +61,7 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
                 
                 var name = row["object_name"] as string;
                 
-                if (name != null && row["object_id"] as int? != null &&  DoesNotMatchFilter(name, objectFilter, excludedObjects))
+                if (name != null && row["object_id"] as int? != null && ShouldIncludeObject(name, objectFilter, excludedObjects))
                 {
                     batches.Add(
                         new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), name, name, (int) row["object_id"]));
@@ -152,11 +152,11 @@ select major_id from sys.extended_properties ep
 
         }
 
-        private bool DoesNotMatchFilter(string name, List<string> objectFilter, List<string> excludedObjects)
+        private bool ShouldIncludeObject(string name, List<string> customExcludedObjects, List<string> excludedObjects)
         {
             var lowerName = name.ToLowerInvariant();
 
-            foreach (var filter in objectFilter)
+            foreach (var filter in customExcludedObjects)
             {
                 if (Regex.IsMatch(name, (string) (filter ?? ".*")))
                     return false;
