@@ -42,7 +42,7 @@ on:
   push:
     branches: [ "main" ]
 #  pull_request:
- #   branches: [ "main" ]
+   # branches: [ "main" ]
 
 env:
     APP_NAME: SQLServerCoverage 
@@ -83,15 +83,15 @@ jobs:
         run:  >
               echo "current path $pwd" && 
               New-Item -ItemType Directory -Force -Path ./releases/packages &&
-              Compress-Archive -Path "./releases/${{ matrix.os }}/${{env.APP_NAME}}/*" -DestinationPath "./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
+              Compress-Archive -Path "./releases/${{ matrix.os }}/${{env.APP_NAME}}/*" -DestinationPath "./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip"              
 
           
       - name: Releasing github package for ${{ matrix.os }}  
         uses: softprops/action-gh-release@v1
         with:
-          name: ReportGenerator_${{ env.Version }}_${{ matrix.os }}
-          body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
+          name: SQLServerCoverage V${{ env.APP_VERSION }}
+          body: Releasing ${{env.APP_NAME}}_${{ env.APP_VERSION }}
           tag_name: v${{ env.APP_VERSION }}
-          files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
+          files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip  
           token: ${{ secrets.GITHUB_TOKEN }}          
           generate_release_notes: true
