@@ -85,11 +85,11 @@ jobs:
 
           
       - name: Releasing github package for ${{ matrix.os }}  
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           name: ReportGenerator_${{ env.Version }}
           body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
           tag_name: v${{ env.APP_VERSION }}
           files: $pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
-          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}          
+          # token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}          
           generate_release_notes: true
