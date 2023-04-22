@@ -44,6 +44,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
+run-name: Releasing  $${{env.APP_NAME}} version ${{ env.APP_VERSION }} 
 
 env:
     APP_NAME: SQLServerCoverage 
@@ -78,7 +79,7 @@ jobs:
               -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/SQLServerCoverage" 
               --sc true -p:PublishSingleFile=true        
 
-      - name: 'ZIP $${{env.APP_NAME}} for ${{ matrix.os }'
+      - name: 'ZIP $${{env.APP_NAME}} for ${{ matrix.os }}'
         run: Compress-Archive -Path "./releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "./releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
 
           
