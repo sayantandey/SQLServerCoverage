@@ -74,13 +74,14 @@ jobs:
       - name: Build and publish app for multiple platform
         run: >
               dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj 
-              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/SQLServerCoverage" 
+              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/$${{env.APP_NAME}}" 
               --sc true -p:PublishSingleFile=true        
 
-      - name: 'ZIP $${{env.APP_NAME}} for ${{ matrix.os }}'
+      - name: 'Zipping for release'
         run:  >
               echo "current path $pwd" && 
-              Compress-Archive -Path "$pwd/releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "$pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
+              New-Item -ItemType Directory -Force -Path $pwd/releases/packages
+              Compress-Archive -Path "$pwd/releases/${{ matrix.os }}/$${{env.APP_NAME}}/*" -DestinationPath "$pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
 
           
       - name: Releasing github package for ${{ matrix.os }}  
@@ -89,6 +90,6 @@ jobs:
           name: ReportGenerator_${{ env.Version }}
           body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
           tag_name: v${{ env.APP_VERSION }}
-          files: ReportGenerator_${{ env.Version }}.zip  
+          files: $pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}          
           generate_release_notes: true
