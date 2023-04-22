@@ -77,7 +77,7 @@ jobs:
         run: >
               dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj 
               -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/${{env.APP_NAME}}" 
-              --sc true -p:PublishSingleFile=true        
+              --sc true        
 
       - name: 'Zipping ${{env.APP_NAME}}_${{ env.APP_VERSION }} for release'
         run:  >
