@@ -78,7 +78,9 @@ jobs:
               --sc true -p:PublishSingleFile=true        
 
       - name: 'ZIP $${{env.APP_NAME}} for ${{ matrix.os }}'
-        run: Compress-Archive -Path "./releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "./releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
+        run:  >
+              echo "current path $pwd" && 
+              Compress-Archive -Path "$pwd/releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "$pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
 
           
       - name: Releasing github package for ${{ matrix.os }}  
