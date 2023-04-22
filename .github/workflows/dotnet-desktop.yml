@@ -91,5 +91,5 @@ jobs:
           body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
           tag_name: v${{ env.APP_VERSION }}
           files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
-          token: ${{ secrets.token }}          
+          token: ${{ secrets.GITHUB_TOKEN }}          
           generate_release_notes: true
