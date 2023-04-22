@@ -44,13 +44,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
-run-name: Releasing  $${{env.APP_NAME}} version ${{ env.APP_VERSION }} 
-
 env:
     APP_NAME: SQLServerCoverage 
     APP_VERSION: 2.2
     DOTNET_VERSION: '7.0.x'   
-    
+
+run-name: Releasing  $${{env.APP_NAME}} version ${{ env.APP_VERSION }} 
       
 jobs:
   build:
