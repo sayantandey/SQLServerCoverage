@@ -77,7 +77,7 @@ jobs:
               -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/${{env.APP_NAME}}" 
               --sc true -p:PublishSingleFile=true        
 
-      - name: 'Zipping ${{env.APP_NAME}}_${{ env.APP_VERSION } for release'
+      - name: 'Zipping ${{env.APP_NAME}}_${{ env.APP_VERSION }} for release'
         run:  >
               echo "current path $pwd" && 
               New-Item -ItemType Directory -Force -Path $pwd/releases/packages &&
