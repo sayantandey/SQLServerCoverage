@@ -5,9 +5,9 @@
       <FullName>sql_server_coverage</FullName>
       <ModuleName>sql_server_coverage</ModuleName>
       <Files>
-        <File uid="677577452" fullPath="[dbo].[udf_test_function]" />
-        <File uid="693577509" fullPath="[dbo].[sp_test_proc]" />
-        <File uid="709577566" fullPath="[dbo].[sp_sql_server_coverage]" />
+        <File uid="930102354" fullPath="[dbo].[udf_test_function]" />
+        <File uid="946102411" fullPath="[dbo].[sp_test_proc]" />
+        <File uid="962102468" fullPath="[dbo].[sp_sql_server_coverage]" />
       </Files>
       <Classes>
         <Class>
@@ -18,9 +18,9 @@
               <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
               <Name>[dbo].[udf_test_function]</Name>
-              <FileRef uid="677577452" />
+              <FileRef uid="930102354" />
               <SequencePoints>
-                <SequencePoint vc="1" uspid="1" ordinal="1" offset="70" sl="6" sc="1" el="6" ec="17" />
+                <SequencePoint vc="1" uspid="1" ordinal="1" offset="69" sl="6" sc="1" el="6" ec="17" />
               </SequencePoints>
               <BranchPoints />
             </Method>
@@ -34,7 +34,7 @@
               <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
               <Name>[dbo].[sp_test_proc]</Name>
-              <FileRef uid="693577509" />
+              <FileRef uid="946102411" />
               <SequencePoints>
                 <SequencePoint vc="1" uspid="2" ordinal="1" offset="43" sl="4" sc="1" el="4" ec="30" />
                 <SequencePoint vc="1" uspid="3" ordinal="2" offset="75" sl="5" sc="1" el="5" ec="19" />
@@ -52,7 +52,7 @@
               <Summary numSequencePoints="3" visitedSequencePoints="2" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="66.66666666666666" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
               <Name>[dbo].[sp_sql_server_coverage]</Name>
-              <FileRef uid="709577566" />
+              <FileRef uid="962102468" />
               <SequencePoints>
                 <SequencePoint vc="1" uspid="5" ordinal="1" offset="72" sl="4" sc="1" el="4" ec="12" />
                 <SequencePoint vc="0" uspid="6" ordinal="2" offset="95" sl="6" sc="2" el="6" ec="24" />

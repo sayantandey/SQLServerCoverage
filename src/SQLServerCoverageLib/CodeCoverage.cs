@@ -12,6 +12,7 @@ namespace SQLServerCoverage
 {
     public class CodeCoverage
     {
+        private const int MAX_DISPATCH_LATENCY = 1000;
         private readonly DatabaseGateway _database;
         private readonly string _databaseName;
         private readonly bool _debugger;
@@ -48,7 +49,7 @@ namespace SQLServerCoverage
         {
             if (debugger)
                 Debugger.Launch();
-            
+
             _databaseName = databaseName;
             if (excludeFilter == null)
                 excludeFilter = new string[0];
@@ -92,7 +93,7 @@ namespace SQLServerCoverage
 
         public CoverageResult Stop()
         {
-            if(!IsStarted)
+            if (!IsStarted)
                 throw new SQLServerCoverageException("SQL Cover was not started, or did not start correctly.");
 
             IsStarted = false;
@@ -131,7 +132,7 @@ namespace SQLServerCoverage
 
             try
             {
-                _database.Execute(command, timeOut, true);  
+                _database.Execute(command, timeOut, true);
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -167,53 +168,11 @@ namespace SQLServerCoverage
             return _result;
         }
 
-        public CoverageResult CoverExe(string exe, string args, string workingDir = null)
-        {
-            try
-            {
-                Debug("Starting Code Coverage");
-
-                Start();
-                Debug("Starting Code Coverage...done");
-
-                Debug("Executing Command: {0} {1} {2}", workingDir, exe, args);
-                RunProcess(exe, args, workingDir);
-                Debug("Executing Command: {0} {1} {2}...done", workingDir, exe, args);
-                WaitForTraceMaxLatency();
-                Debug("Stopping Code Coverage");
-                var rawEvents = StopInternal();
-                Debug("Stopping Code Coverage...done");
-
-                Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents, new List<string>(), $"SQLServerCoverage result of running {exe} {args}");
-                Debug("Getting Code Coverage Result..done");
-                
-            }
-            catch (Exception e)
-            {
-                Debug("Exception running code coverage: {0}\r\n{1}", e.Message, e.StackTrace);
-            }
-
-            return _result;
-        }
 
         private static void WaitForTraceMaxLatency()
         {
-            Thread.Sleep(1000); //max distpatch latency!
+            Thread.Sleep(MAX_DISPATCH_LATENCY);
         }
-
-        private void RunProcess(string exe, string args, string workingDir)
-        {
-            var si = new ProcessStartInfo();
-            si.FileName = exe;
-            si.Arguments = args;
-            si.UseShellExecute = false;
-            si.WorkingDirectory = workingDir;
-
-            var process = Process.Start(si);
-            process.WaitForExit();
-        }
-
 
         private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions, string commandDetail)
         {

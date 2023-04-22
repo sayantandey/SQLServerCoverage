@@ -76,25 +76,26 @@ SQLServerCoverageCore
 
   -v, --verbose             Set output to verbose messages.
 
-  -c, --command             Required. Choose command to run from: Get-CoverTSql, Get-CoverExe.
+  -c, --command             Required. Choose command to run: Currently only Get-CoverTSql available
 
-  -e, --exportCommand       Required. Choose command to run from:Export-OpenXml, Export-Html,  Export-Cobertura
+  -e, --exportType          Required. Choose export options : Export-OpenXml, Export-Html, Export-Cobertura
 
   -b, --debug               Prints out detailed output.
 
   -p, --requiredParams      Get required parameters for a command
 
-  -k, --connectionString    Connection String to the sql server
+  -k, --connectionString    Connection String to the SQL server
 
   -d, --databaseName        Default Database
 
-  -q, --query               Sql Query, Ex. tSQLt.runAll
+  -q, --query               Sql Query, Ex. tSQLt.runAll OR your custom test executor
 
-  -o, --outputPath          Output Path
+  -o, --outputPath          Output Path of The Export Result
 
-  -a, --args                Arguments for an exe file
+  -t, --timeout             Wait time in Seconds before terminating the attempt to execute test SQL command
 
-  -t, --exeName             executable name
+  -i, --ignore              Space separated list of database objects to ignore. Regex Accepted. Case 
+                            sensitive depending on collation. Ex."sp_dummy_proc* sp_test_proc"
 
   --help                    Display this help screen.
 
@@ -108,7 +109,7 @@ SQLServerCoverageCore
 Generate the coverage report as xml
 
 ```bash
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 This will generate the OpenCover xml report in `OUTPUT_PATH` along with the source files in the database it is executed.
@@ -118,7 +119,7 @@ This will generate the OpenCover xml report in `OUTPUT_PATH` along with the sour
 Generate the coverage report as html. It leverages ReportGenerator to Generate Inline HTML Report of Coverage.
 
 ```bash
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 ![](./example/Coverage%20Check%20CLI.gif)
@@ -133,7 +134,7 @@ It can be used with tSQLt framework to check the coverage.
 
 If you have a script you want to cover then you can call:
 ```
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 This will generate a openxml coverage report where you can either examine the amount of statement covered or use the report to generate HTML report using [ReportGenerator](https://github.com/danielpalme/ReportGenerator).

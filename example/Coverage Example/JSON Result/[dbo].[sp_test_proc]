@@ -1,7 +1,0 @@
-CREATE PROCEDURE sp_test_proc
-AS
-BEGIN
-	PRINT 'test stored procedure'
-	PRINT dbo.udf_test_function()
-END
-
