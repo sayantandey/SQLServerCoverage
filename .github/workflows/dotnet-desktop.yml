@@ -80,7 +80,7 @@ jobs:
       - name: 'Zipping for release'
         run:  >
               echo "current path $pwd" && 
-              New-Item -ItemType Directory -Force -Path $pwd/releases/packages
+              New-Item -ItemType Directory -Force -Path $pwd/releases/packages &&
               Compress-Archive -Path "$pwd/releases/${{ matrix.os }}/$${{env.APP_NAME}}/*" -DestinationPath "$pwd/releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
 
           
