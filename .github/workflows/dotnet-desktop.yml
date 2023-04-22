@@ -73,8 +73,7 @@ jobs:
       - name: Build and publish app for multiple platform
         run: |
               dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj  \
-              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/SQLServerCoverage" \
-              --sc true -p:PublishSingleFile=true        
+              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/SQLServerCoverage" --sc true -p:PublishSingleFile=true        
 
       - name: 'ZIP System wide tools releases'
         run: Compress-Archive -Path "releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
