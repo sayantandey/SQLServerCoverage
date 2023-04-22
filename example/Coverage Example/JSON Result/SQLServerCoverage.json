@@ -1,0 +1,123 @@
+{
+  "StatementCount": 7,
+  "CoveredStatementCount": 6,
+  "BranchesCount": 2,
+  "CoveredBranchesCount": 1,
+  "HitCount": 6,
+  "DatabaseName": "sql_server_coverage",
+  "DataSource": "localhost,1433",
+  "SqlExceptions": [],
+  "Batches": [
+    {
+      "QuotedIdentifier": true,
+      "Text": "\r\nCREATE FUNCTION udf_test_function()\r\nRETURNS DATETIME\r\nAS\r\nBEGIN\r\n\tRETURN GETDATE()\r\nEND\r\n\r\n",
+      "FileName": "[dbo].[udf_test_function]",
+      "ObjectName": "[dbo].[udf_test_function]",
+      "ObjectId": 930102354,
+      "Statements": [
+        {
+          "Text": "RETURN GETDATE()",
+          "Offset": 69,
+          "Length": 16,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 1
+        }
+      ],
+      "StatementCount": 1,
+      "CoveredStatementCount": 1,
+      "BranchesCount": 0,
+      "CoveredBranchesCount": 0,
+      "HitCount": 1
+    },
+    {
+      "QuotedIdentifier": true,
+      "Text": "CREATE PROCEDURE sp_test_proc\r\nAS\r\nBEGIN\r\n\tPRINT 'test stored procedure'\r\n\tprint CURRENT_USER\r\n\tPRINT dbo.udf_test_function()\r\nEND\r\n\r\n\r\n",
+      "FileName": "[dbo].[sp_test_proc]",
+      "ObjectName": "[dbo].[sp_test_proc]",
+      "ObjectId": 946102411,
+      "Statements": [
+        {
+          "Text": "PRINT 'test stored procedure'",
+          "Offset": 43,
+          "Length": 29,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 1
+        },
+        {
+          "Text": "print CURRENT_USER",
+          "Offset": 75,
+          "Length": 18,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 1
+        },
+        {
+          "Text": "PRINT dbo.udf_test_function()",
+          "Offset": 96,
+          "Length": 29,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 1
+        }
+      ],
+      "StatementCount": 3,
+      "CoveredStatementCount": 3,
+      "BranchesCount": 0,
+      "CoveredBranchesCount": 0,
+      "HitCount": 3
+    },
+    {
+      "QuotedIdentifier": true,
+      "Text": "CREATE PROCEDURE sp_sql_server_coverage @arg NUMERIC(1, 0)\r\nAS\r\nBEGIN\r\n\tIF @arg = 2\r\n\tBEGIN\r\n\t\tPRINT ('If condition')\r\n\tEND\r\n\tELSE\r\n\tBEGIN\r\n\t\tEXEC sp_test_proc\r\n\tEND\r\nEND\r\n\r\n\r\n",
+      "FileName": "[dbo].[sp_sql_server_coverage]",
+      "ObjectName": "[dbo].[sp_sql_server_coverage]",
+      "ObjectId": 962102468,
+      "Statements": [
+        {
+          "Text": "IF @arg = 2",
+          "Offset": 72,
+          "Length": 11,
+          "IsCoverable": true,
+          "Branches": [
+            {
+              "Text": "BEGIN\r\n\t\tPRINT ('If condition')\r\n\tEND",
+              "Offset": 86,
+              "Length": 37,
+              "HitCount": 0
+            },
+            {
+              "Text": "BEGIN\r\n\t\tEXEC sp_test_proc\r\n\tEND",
+              "Offset": 133,
+              "Length": 32,
+              "HitCount": 1
+            }
+          ],
+          "HitCount": 1
+        },
+        {
+          "Text": "PRINT ('If condition')",
+          "Offset": 95,
+          "Length": 22,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 0
+        },
+        {
+          "Text": "EXEC sp_test_proc",
+          "Offset": 142,
+          "Length": 17,
+          "IsCoverable": true,
+          "Branches": [],
+          "HitCount": 1
+        }
+      ],
+      "StatementCount": 3,
+      "CoveredStatementCount": 2,
+      "BranchesCount": 2,
+      "CoveredBranchesCount": 1,
+      "HitCount": 2
+    }
+  ]
+}
