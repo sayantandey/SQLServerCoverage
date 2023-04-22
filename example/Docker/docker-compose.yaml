@@ -7,6 +7,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: sql_coverage
     environment:
+      # '$$' to escape varibale substitution. The password is "StrONg_P/\$"
       MSSQL_SA_PASSWORD: StrONg_P/\$$
       ACCEPT_EULA: "Y"
     ports:

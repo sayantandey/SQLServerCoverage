@@ -6,3 +6,4 @@ BEGIN
 	PRINT dbo.udf_test_function()
 END
 
+

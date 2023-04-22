@@ -2,7 +2,7 @@
   "profiles": {
     "SQLServerCoverageCore": {
       "commandName": "Project",
-      "commandLineArgs": " -v true -c Get-CoverTSql -e \"Export-Cobertura\" -d sql_server_coverage -q \"exec sp_sql_server_coverage 1\" -o \"C:\\Users\\iamsa\\Documents\\Git Repos\\SQLServerCoverage\\example\\Coverage Example\\Cobertura\" -k \"Server=localhost,1433;uid=sa;Pwd=StrONg_P/\\$\""
+      "commandLineArgs": " -v true -c Get-CoverTSql -e \"Export-OpenXml\" -d sql_server_coverage -q \"exec sp_sql_server_coverage 1\" -o \"C:\\Users\\iamsa\\Documents\\Git Repos\\SQLServerCoverage\\example\\Coverage Example\\OpenCover XML Report\" -k \"Server=localhost,1433;uid=sa;Pwd=StrONg_P/\\$\" -t 100 -i \"sp_dummy_proc* sp_test2\""
     }
   }
 }
