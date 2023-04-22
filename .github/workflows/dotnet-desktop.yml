@@ -41,20 +41,23 @@ name: .NET Core Desktop
 on:
   push:
     branches: [ "main" ]
- # pull_request:
-  #  branches: [ "main" ]
+#  pull_request:
+ #   branches: [ "main" ]
 
 env:
     APP_NAME: SQLServerCoverage 
     APP_VERSION: 2.2
-    DOTNET_VERSION: '7.0.x'    
-      
+    DOTNET_VERSION: '7.0.x'   
+
+permissions:
+  contents: write
+  
 jobs:
   build:
     runs-on: windows-latest
     strategy:
       matrix:
-        os: [windows-latest, windows-2019, ubuntu-latest, ubuntu-20.04, macos-latest, macos-11]
+        os: [win10-x64, ubuntu.20.04-x64, linux-x64, osx-x64]
     
     # Build Steps    
     steps:
@@ -71,21 +74,24 @@ jobs:
         run: dotnet --info
 
       - name: Build and publish app for multiple platform
-        run: |
-              dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj  \
-              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/SQLServerCoverage" \
-              --self-contained true  -p:PublishSingleFile=true        
+        run: >
+              dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj 
+              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/${{env.APP_NAME}}" 
+              --sc true -p:PublishSingleFile=true        
 
-      - name: 'ZIP System wide tools releases'
-        run: Compress-Archive -Path "releases/${{ matrix.os }}/SQLServerCoverage/*" -DestinationPath "releases/packages/$${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
+      - name: 'Zipping ${{env.APP_NAME}}_${{ env.APP_VERSION }} for release'
+        run:  >
+              echo "current path $pwd" && 
+              New-Item -ItemType Directory -Force -Path ./releases/packages &&
+              Compress-Archive -Path "./releases/${{ matrix.os }}/${{env.APP_NAME}}/*" -DestinationPath "./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip"              
 
           
-      - name: GitHubRelease
+      - name: Releasing github package for ${{ matrix.os }}  
         uses: softprops/action-gh-release@v1
         with:
-          name: ReportGenerator_${{ env.Version }}
+          name: ReportGenerator_${{ env.Version }}_${{ matrix.os }}
           body: This release requires .NET 4.7 or .NET Core 3.1/5.x/6.x/7.x.
           tag_name: v${{ env.APP_VERSION }}
-          files: ReportGenerator_${{ env.Version }}.zip  
-          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}          
+          files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}.zip  
+          token: ${{ secrets.GITHUB_TOKEN }}          
           generate_release_notes: true
