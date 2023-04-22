@@ -54,7 +54,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        os: [win10-x64, ubuntu.20.04-x64, linux-x64. osx-x64]
+        os: [win10-x64, ubuntu.20.04-x64, linux-x64, osx-x64]
     
     # Build Steps    
     steps:
