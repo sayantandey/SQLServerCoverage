@@ -1,5 +1,8 @@
 # SQLServerCoverage 
-
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/sayantandey/SQLServerCoverage/blob/main/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/sayantandey/SQLServerCoverage.svg)](https://github.com/sayantandey/SQLServerCoverage/releases/latest)
+[![.NET Core Desktop](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml)
+[![Github All Releases](https://img.shields.io/github/downloads/sayantandey/SQLServerCoverage/total.svg)]()
 ##### Code coverage for SQL Server T-SQL 
 
 ##### Extended From [SQLCover](https://github.com/GoEddie/SQLCover).
