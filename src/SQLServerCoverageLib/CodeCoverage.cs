@@ -134,7 +134,7 @@ namespace SQLServerCoverage
             {
                 _database.Execute(command, timeOut, true);
             }
-            catch (System.Data.SqlClient.SqlException e)
+            catch (Microsoft.Data.SqlClient.SqlException e)
             {
                 if (e.Number == -2)
                 {
