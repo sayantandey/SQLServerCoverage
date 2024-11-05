@@ -31,6 +31,9 @@ namespace SQLServerCoverage.Parsers
                 case SqlServerVersion.Sql150:
                     return new TSql130Parser(quoted);
 
+                case SqlServerVersion.Sql160:
+                    return new TSql160Parser(quoted);
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(version), version, null);
             }
