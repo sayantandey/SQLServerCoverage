@@ -1,0 +1,7 @@
+CREATE PROCEDURE sp_dummy_proc1
+AS
+BEGIN
+	print 'sp_dummy_proc1'
+	END
+
+

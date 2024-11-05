@@ -1,67 +1,215 @@
 <CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Summary numSequencePoints="7" visitedSequencePoints="6" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="85.71428571428571" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+  <Summary numSequencePoints="56" visitedSequencePoints="23" numBranchPoints="19" visitedBranchPoints="3" sequenceCoverage="41.07142857142857" branchCoverage="15.789473684210526" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
   <Modules>
-    <Module hash="DE-13-6A-D9-87-CF-EA-B5-02-2E-67-5B-43-CC-23-85-90-19-C6-6B">
-      <FullName>sql_server_coverage</FullName>
-      <ModuleName>sql_server_coverage</ModuleName>
+    <Module hash="19-90-46-3C-E9-7C-FE-4A-16-03-45-A5-00-FD-B0-68-22-90-08-16">
+      <FullName>sql_coverage_test</FullName>
+      <ModuleName>sql_coverage_test</ModuleName>
       <Files>
-        <File uid="930102354" fullPath="[dbo].[udf_test_function]" />
-        <File uid="946102411" fullPath="[dbo].[sp_test_proc]" />
-        <File uid="962102468" fullPath="[dbo].[sp_sql_server_coverage]" />
+        <File uid="901578250" fullPath="[coverage].[fn_get_current_timestamp]" />
+        <File uid="917578307" fullPath="[coverage].[fn_calculate_age]" />
+        <File uid="933578364" fullPath="[coverage].[fn_validate_email]" />
+        <File uid="949578421" fullPath="[coverage].[sp_audit_log]" />
+        <File uid="965578478" fullPath="[coverage].[sp_process_employee]" />
+        <File uid="981578535" fullPath="[coverage].[sp_complex_business_logic]" />
+        <File uid="997578592" fullPath="[exclude].[sp_maintenance]" />
+        <File uid="1013578649" fullPath="[exclude].[sp_cleanup]" />
       </Files>
       <Classes>
         <Class>
           <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
-          <FullName>[dbo].[udf_test_function]</FullName>
+          <FullName>[coverage].[fn_get_current_timestamp]</FullName>
           <Methods>
             <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="100" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
               <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
-              <Name>[dbo].[udf_test_function]</Name>
-              <FileRef uid="930102354" />
+              <Name>[coverage].[fn_get_current_timestamp]</Name>
+              <FileRef uid="901578250" />
               <SequencePoints>
-                <SequencePoint vc="1" uspid="1" ordinal="1" offset="69" sl="6" sc="1" el="6" ec="17" />
+                <SequencePoint vc="19" uspid="1" ordinal="1" offset="117" sl="7" sc="4" el="7" ec="20" />
               </SequencePoints>
               <BranchPoints />
             </Method>
           </Methods>
         </Class>
         <Class>
-          <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
-          <FullName>[dbo].[sp_test_proc]</FullName>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[coverage].[fn_calculate_age]</FullName>
           <Methods>
             <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="100" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
-              <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
-              <Name>[dbo].[sp_test_proc]</Name>
-              <FileRef uid="946102411" />
+              <Name>[coverage].[fn_calculate_age]</Name>
+              <FileRef uid="917578307" />
               <SequencePoints>
-                <SequencePoint vc="1" uspid="2" ordinal="1" offset="43" sl="4" sc="1" el="4" ec="30" />
-                <SequencePoint vc="1" uspid="3" ordinal="2" offset="75" sl="5" sc="1" el="5" ec="19" />
-                <SequencePoint vc="1" uspid="4" ordinal="3" offset="96" sl="6" sc="1" el="6" ec="30" />
+                <SequencePoint vc="1" uspid="2" ordinal="1" offset="98" sl="8" sc="4" el="14" ec="11" />
               </SequencePoints>
               <BranchPoints />
             </Method>
           </Methods>
         </Class>
         <Class>
-          <Summary numSequencePoints="3" visitedSequencePoints="2" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="66.66666666666666" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
-          <FullName>[dbo].[sp_sql_server_coverage]</FullName>
+          <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[coverage].[fn_validate_email]</FullName>
           <Methods>
-            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="66.66666666666666" branchCoverage="50" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
-              <Summary numSequencePoints="3" visitedSequencePoints="2" numBranchPoints="2" visitedBranchPoints="1" sequenceCoverage="66.66666666666666" branchCoverage="50" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="100" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="1" visitedSequencePoints="1" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
               <MetadataToken>01041980</MetadataToken>
-              <Name>[dbo].[sp_sql_server_coverage]</Name>
-              <FileRef uid="962102468" />
+              <Name>[coverage].[fn_validate_email]</Name>
+              <FileRef uid="933578364" />
               <SequencePoints>
-                <SequencePoint vc="1" uspid="5" ordinal="1" offset="72" sl="4" sc="1" el="4" ec="12" />
-                <SequencePoint vc="0" uspid="6" ordinal="2" offset="95" sl="6" sc="2" el="6" ec="24" />
-                <SequencePoint vc="1" uspid="7" ordinal="3" offset="142" sl="10" sc="2" el="10" ec="19" />
+                <SequencePoint vc="1" uspid="3" ordinal="1" offset="104" sl="8" sc="4" el="14" ec="7" />
+              </SequencePoints>
+              <BranchPoints />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="8" visitedSequencePoints="5" numBranchPoints="3" visitedBranchPoints="1" sequenceCoverage="62.5" branchCoverage="33.33333333333333" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[coverage].[sp_audit_log]</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="62.5" branchCoverage="33.33333333333333" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="8" visitedSequencePoints="5" numBranchPoints="3" visitedBranchPoints="1" sequenceCoverage="62.5" branchCoverage="33.33333333333333" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[coverage].[sp_audit_log]</Name>
+              <FileRef uid="949578421" />
+              <SequencePoints>
+                <SequencePoint vc="2" uspid="4" ordinal="1" offset="186" sl="9" sc="4" el="9" ec="18" />
+                <SequencePoint vc="2" uspid="5" ordinal="2" offset="213" sl="11" sc="4" el="12" ec="64" />
+                <SequencePoint vc="2" uspid="6" ordinal="3" offset="408" sl="15" sc="4" el="15" ec="27" />
+                <SequencePoint vc="0" uspid="7" ordinal="4" offset="452" sl="17" sc="8" el="17" ec="67" />
+                <SequencePoint vc="0" uspid="8" ordinal="5" offset="522" sl="18" sc="8" el="18" ec="14" />
+                <SequencePoint vc="2" uspid="9" ordinal="6" offset="550" sl="21" sc="4" el="21" ec="29" />
+                <SequencePoint vc="0" uspid="10" ordinal="7" offset="596" sl="23" sc="8" el="23" ec="36" />
+                <SequencePoint vc="2" uspid="11" ordinal="8" offset="665" sl="27" sc="8" el="27" ec="35" />
               </SequencePoints>
               <BranchPoints>
-                <BranchPoint vc="0" uspid="8" ordinal="1" offset="86" sl="4" path="0" offsetchain="" offsetend="123" />
-                <BranchPoint vc="1" uspid="9" ordinal="2" offset="133" sl="4" path="1" offsetchain="" offsetend="165" />
+                <BranchPoint vc="0" uspid="12" ordinal="1" offset="437" sl="15" path="0" offsetchain="" offsetend="538" />
+                <BranchPoint vc="0" uspid="13" ordinal="2" offset="581" sl="21" path="0" offsetchain="" offsetend="634" />
+                <BranchPoint vc="2" uspid="14" ordinal="3" offset="650" sl="21" path="1" offsetchain="" offsetend="702" />
               </BranchPoints>
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="24" visitedSequencePoints="7" numBranchPoints="9" visitedBranchPoints="1" sequenceCoverage="29.166666666666668" branchCoverage="11.11111111111111" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[coverage].[sp_process_employee]</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="29.166666666666668" branchCoverage="11.11111111111111" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="24" visitedSequencePoints="7" numBranchPoints="9" visitedBranchPoints="1" sequenceCoverage="29.166666666666668" branchCoverage="11.11111111111111" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[coverage].[sp_process_employee]</Name>
+              <FileRef uid="965578478" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="15" ordinal="1" offset="305" sl="12" sc="4" el="12" ec="18" />
+                <SequencePoint vc="1" uspid="16" ordinal="2" offset="382" sl="15" sc="4" el="15" ec="40" />
+                <SequencePoint vc="0" uspid="17" ordinal="3" offset="439" sl="17" sc="8" el="17" ec="58" />
+                <SequencePoint vc="0" uspid="18" ordinal="4" offset="500" sl="18" sc="8" el="18" ec="14" />
+                <SequencePoint vc="1" uspid="19" ordinal="5" offset="564" sl="22" sc="4" el="22" ec="45" />
+                <SequencePoint vc="0" uspid="20" ordinal="6" offset="626" sl="24" sc="8" el="24" ec="46" />
+                <SequencePoint vc="0" uspid="21" ordinal="7" offset="675" sl="25" sc="8" el="25" ec="14" />
+                <SequencePoint vc="1" uspid="22" ordinal="8" offset="737" sl="29" sc="4" el="29" ec="49" />
+                <SequencePoint vc="0" uspid="23" ordinal="9" offset="803" sl="31" sc="8" el="31" ec="64" />
+                <SequencePoint vc="0" uspid="24" ordinal="10" offset="870" sl="32" sc="8" el="32" ec="14" />
+                <SequencePoint vc="1" uspid="25" ordinal="11" offset="951" sl="37" sc="8" el="37" ec="27" />
+                <SequencePoint vc="1" uspid="26" ordinal="12" offset="999" sl="39" sc="12" el="46" ec="13" />
+                <SequencePoint vc="1" uspid="27" ordinal="13" offset="1448" sl="49" sc="12" el="52" ec="46" />
+                <SequencePoint vc="0" uspid="28" ordinal="14" offset="1636" sl="54" sc="13" el="54" ec="32" />
+                <SequencePoint vc="0" uspid="29" ordinal="15" offset="1684" sl="56" sc="12" el="63" ec="32" />
+                <SequencePoint vc="0" uspid="30" ordinal="16" offset="2019" sl="65" sc="12" el="65" ec="29" />
+                <SequencePoint vc="0" uspid="31" ordinal="17" offset="2073" sl="67" sc="16" el="67" ec="63" />
+                <SequencePoint vc="0" uspid="32" ordinal="18" offset="2238" sl="71" sc="12" el="74" ec="46" />
+                <SequencePoint vc="0" uspid="33" ordinal="19" offset="2474" sl="78" sc="12" el="79" ec="32" />
+                <SequencePoint vc="0" uspid="34" ordinal="20" offset="2555" sl="81" sc="12" el="81" ec="29" />
+                <SequencePoint vc="0" uspid="35" ordinal="21" offset="2609" sl="83" sc="16" el="83" ec="65" />
+                <SequencePoint vc="0" uspid="36" ordinal="22" offset="2776" sl="87" sc="12" el="90" ec="46" />
+                <SequencePoint vc="0" uspid="37" ordinal="23" offset="3054" sl="95" sc="8" el="98" ec="41" />
+                <SequencePoint vc="0" uspid="38" ordinal="24" offset="3210" sl="99" sc="8" el="99" ec="13" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="39" ordinal="1" offset="424" sl="15" path="0" offsetchain="" offsetend="516" />
+                <BranchPoint vc="0" uspid="40" ordinal="2" offset="611" sl="22" path="0" offsetchain="" offsetend="691" />
+                <BranchPoint vc="0" uspid="41" ordinal="3" offset="788" sl="29" path="0" offsetchain="" offsetend="886" />
+                <BranchPoint vc="1" uspid="42" ordinal="4" offset="980" sl="37" path="0" offsetchain="" offsetend="1621" />
+                <BranchPoint vc="0" uspid="43" ordinal="5" offset="1636" sl="37" path="1" offsetchain="" offsetend="2949" />
+                <BranchPoint vc="0" uspid="44" ordinal="6" offset="1665" sl="54" path="0" offsetchain="" offsetend="2411" />
+                <BranchPoint vc="0" uspid="45" ordinal="7" offset="2455" sl="54" path="1" offsetchain="" offsetend="2949" />
+                <BranchPoint vc="0" uspid="46" ordinal="8" offset="2050" sl="65" path="0" offsetchain="" offsetend="2138" />
+                <BranchPoint vc="0" uspid="47" ordinal="9" offset="2586" sl="81" path="0" offsetchain="" offsetend="2676" />
+              </BranchPoints>
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="17" visitedSequencePoints="8" numBranchPoints="7" visitedBranchPoints="1" sequenceCoverage="47.05882352941176" branchCoverage="14.285714285714285" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[coverage].[sp_complex_business_logic]</FullName>
+          <Methods>
+            <Method visited="true" cyclomaticComplexity="0" sequenceCoverage="47.05882352941176" branchCoverage="14.285714285714285" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="17" visitedSequencePoints="8" numBranchPoints="7" visitedBranchPoints="1" sequenceCoverage="47.05882352941176" branchCoverage="14.285714285714285" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[coverage].[sp_complex_business_logic]</Name>
+              <FileRef uid="981578535" />
+              <SequencePoints>
+                <SequencePoint vc="1" uspid="48" ordinal="1" offset="227" sl="9" sc="4" el="9" ec="18" />
+                <SequencePoint vc="1" uspid="49" ordinal="2" offset="478" sl="17" sc="4" el="23" ec="24" />
+                <SequencePoint vc="1" uspid="50" ordinal="3" offset="748" sl="26" sc="4" el="26" ec="26" />
+                <SequencePoint vc="0" uspid="51" ordinal="4" offset="791" sl="28" sc="8" el="28" ec="75" />
+                <SequencePoint vc="0" uspid="52" ordinal="5" offset="869" sl="29" sc="8" el="29" ec="14" />
+                <SequencePoint vc="1" uspid="53" ordinal="6" offset="956" sl="33" sc="4" el="33" ec="24" />
+                <SequencePoint vc="1" uspid="54" ordinal="7" offset="1016" sl="35" sc="8" el="35" ec="36" />
+                <SequencePoint vc="0" uspid="55" ordinal="8" offset="1073" sl="37" sc="12" el="37" ec="65" />
+                <SequencePoint vc="0" uspid="56" ordinal="9" offset="1141" sl="38" sc="12" el="38" ec="18" />
+                <SequencePoint vc="1" uspid="57" ordinal="10" offset="1181" sl="41" sc="8" el="41" ec="64" />
+                <SequencePoint vc="0" uspid="58" ordinal="11" offset="1266" sl="43" sc="12" el="43" ec="77" />
+                <SequencePoint vc="1" uspid="59" ordinal="12" offset="1365" sl="46" sc="8" el="50" ec="28" />
+                <SequencePoint vc="1" uspid="60" ordinal="13" offset="1755" sl="53" sc="8" el="56" ec="42" />
+                <SequencePoint vc="0" uspid="61" ordinal="14" offset="1934" sl="58" sc="9" el="58" ec="29" />
+                <SequencePoint vc="0" uspid="62" ordinal="15" offset="1994" sl="60" sc="8" el="69" ec="27" />
+                <SequencePoint vc="0" uspid="63" ordinal="16" offset="2438" sl="72" sc="8" el="75" ec="42" />
+                <SequencePoint vc="0" uspid="64" ordinal="17" offset="2636" sl="79" sc="8" el="79" ec="55" />
+              </SequencePoints>
+              <BranchPoints>
+                <BranchPoint vc="0" uspid="65" ordinal="1" offset="776" sl="26" path="0" offsetchain="" offsetend="885" />
+                <BranchPoint vc="1" uspid="66" ordinal="2" offset="1001" sl="33" path="0" offsetchain="" offsetend="1923" />
+                <BranchPoint vc="0" uspid="67" ordinal="3" offset="1934" sl="33" path="1" offsetchain="" offsetend="2693" />
+                <BranchPoint vc="0" uspid="68" ordinal="4" offset="1054" sl="35" path="0" offsetchain="" offsetend="1161" />
+                <BranchPoint vc="0" uspid="69" ordinal="5" offset="1247" sl="41" path="0" offsetchain="" offsetend="1345" />
+                <BranchPoint vc="0" uspid="70" ordinal="6" offset="1979" sl="58" path="0" offsetchain="" offsetend="2605" />
+                <BranchPoint vc="0" uspid="71" ordinal="7" offset="2621" sl="58" path="1" offsetchain="" offsetend="2693" />
+              </BranchPoints>
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[exclude].[sp_maintenance]</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[exclude].[sp_maintenance]</Name>
+              <FileRef uid="997578592" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="72" ordinal="1" offset="109" sl="6" sc="4" el="6" ec="18" />
+                <SequencePoint vc="0" uspid="73" ordinal="2" offset="130" sl="7" sc="4" el="7" ec="41" />
+              </SequencePoints>
+              <BranchPoints />
+            </Method>
+          </Methods>
+        </Class>
+        <Class>
+          <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+          <FullName>[exclude].[sp_cleanup]</FullName>
+          <Methods>
+            <Method visited="false" cyclomaticComplexity="0" sequenceCoverage="0" branchCoverage="0" isConstructor="false" isStatic="false" isGetter="true" isSetter="false">
+              <Summary numSequencePoints="2" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" />
+              <MetadataToken>01041980</MetadataToken>
+              <Name>[exclude].[sp_cleanup]</Name>
+              <FileRef uid="1013578649" />
+              <SequencePoints>
+                <SequencePoint vc="0" uspid="74" ordinal="1" offset="54" sl="5" sc="4" el="5" ec="18" />
+                <SequencePoint vc="0" uspid="75" ordinal="2" offset="75" sl="6" sc="4" el="6" ec="37" />
+              </SequencePoints>
+              <BranchPoints />
             </Method>
           </Methods>
         </Class>

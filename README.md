@@ -3,6 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/sayantandey/SQLServerCoverage.svg)](https://github.com/sayantandey/SQLServerCoverage/releases/latest)
 [![.NET Core Desktop](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml)
 [![Github All Releases](https://img.shields.io/github/downloads/sayantandey/SQLServerCoverage/total.svg)]()
+
 ##### Code coverage for SQL Server T-SQL 
 
 ##### Extended From [SQLCover](https://github.com/GoEddie/SQLCover).
@@ -106,6 +107,31 @@ SQLServerCoverageCore
 ```
 
 ### Example:
+
+> #### Quick Check Using Docker 
+>
+> 1. Go to the Docker directory and spin up the SQL Server in a docker container
+>
+>    ```
+>    docker-compose -f "./example/Docker/docker-compose.yaml" up -d
+>    ```
+>
+> 2. Then setup the mock test suite :
+>    ```bash
+>    dir\SQLServerCoverage>docker exec sql_coverage /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrONg_P/\$ -i /scripts/mocked_test_suit.sql -C -N -t 30
+>    Changed database context to 'sql_coverage_test'.
+>    Configuration option 'show advanced options' changed from 1 to 1. Run the RECONFIGURE statement to install.
+>    
+>    (3 rows affected)
+>    
+>    ```
+>
+> 3. Run the coverage server
+>    ```bash
+>    SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d "sql_coverage_test"  -o "../../example/Coverage Example/HTML Report" -q "EXEC coverage.sp_process_employee @firstName='John', @lastName='Test', @email='john.test@example.com', @birthDate='1990-01-01', @department='IT', @salary=60000.00, @operation='C'; EXEC coverage.sp_complex_business_logic @department='IT', @salaryAdjustment=5.0, @actionType='A';" -k "Server=localhost,1433;Database=sql_coverage_test;User Id=sa;Password=StrONg_P/\$;TrustServerCertificate=True" -t 30 -i "exclude.sp_maintenance,exclude.sp_cleanup"
+>    ```
+>
+>    
 
 ##### 1. OpenCover Format
 
