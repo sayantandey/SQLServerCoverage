@@ -25,7 +25,7 @@
               <Name>[coverage].[fn_get_current_timestamp]</Name>
               <FileRef uid="901578250" />
               <SequencePoints>
-                <SequencePoint vc="57" uspid="1" ordinal="1" offset="117" sl="7" sc="4" el="7" ec="20" />
+                <SequencePoint vc="59" uspid="1" ordinal="1" offset="117" sl="7" sc="4" el="7" ec="20" />
               </SequencePoints>
               <BranchPoints />
             </Method>
