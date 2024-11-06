@@ -1,97 +1,93 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
-# built on .NET Core.
-# To learn how to migrate your existing application to .NET Core,
-# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
-#
-# To configure this workflow:
-#
-# 1. Configure environment variables
-# GitHub sets default environment variables for every workflow run.
-# Replace the variables relative to your project in the "env" section below.
-#
-# 2. Signing
-# Generate a signing certificate in the Windows Application
-# Packaging Project or add an existing signing certificate to the project.
-# Next, use PowerShell to encode the .pfx file using Base64 encoding
-# by running the following Powershell script to generate the output string:
-#
-# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
-# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
-#
-# Open the output file, SigningCertificate_Encoded.txt, and copy the
-# string inside. Then, add the string to the repo as a GitHub secret
-# and name it "Base64_Encoded_Pfx."
-# For more information on how to configure your signing certificate for
-# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
-#
-# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
-# See "Build the Windows Application Packaging project" below to see how the secret is used.
-#
-# For more information on GitHub Actions, refer to https://github.com/features/actions
-# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
-# refer to https://github.com/microsoft/github-actions-for-desktop-apps
-
-name: .NET Core Desktop
+name: Release Build
 
 on:
   push:
     branches: [ "main" ]
-#  pull_request:
-   # branches: [ "main" ]
-
-env:
-    APP_NAME: SQLServerCoverage 
-    APP_VERSION: 2.2
-    DOTNET_VERSION: '7.0.x'   
+    paths:
+      - 'src/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: write
   
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Extract version from csproj
+      - name: Get Version
+        id: get_version
+        shell: pwsh
+        run: |
+          $xml = [xml](Get-Content ./src/SQLServerCoverageCore/SQLServerCoverageCore.csproj)
+          $version = $xml.Project.PropertyGroup.Version
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "Extracted version: $version"
+
   build:
+    needs: prepare
     runs-on: windows-latest
     strategy:
       matrix:
+        # Define target platforms
         os: [win10-x64, ubuntu.20.04-x64, linux-x64, osx-x64]
     
-    # Build Steps    
+    env:
+      APP_NAME: SQLServerCoverage
+      APP_VERSION: ${{ needs.prepare.outputs.version }}
+      DOTNET_VERSION: '8.0.x'
+      
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      # Refer : https://github.com/actions/setup-dotnet/blob/main/action.yml
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Show dotnet info'
-        run: dotnet --info
+      # Build and publish for each platform
+      - name: Build and Publish
+        run: |
+          dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj `
+            -c Release `
+            -r ${{ matrix.os }} `
+            -o "releases/${{ matrix.os }}/${{env.APP_NAME}}" `
+            --sc true `
+            -p:Version=${{ env.APP_VERSION }}
 
-      - name: Build and publish app for multiple platform
-        run: >
-              dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj 
-              -c Release  -r ${{ matrix.os }} -o "releases/${{ matrix.os }}/${{env.APP_NAME}}" 
-              --sc true        
+      # Create release packages
+      - name: Create Release Package
+        run: |
+          New-Item -ItemType Directory -Force -Path ./releases/packages
+          Compress-Archive `
+            -Path "./releases/${{ matrix.os }}/${{env.APP_NAME}}/*" `
+            -DestinationPath "./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip"
 
-      - name: 'Zipping ${{env.APP_NAME}}_${{ env.APP_VERSION }} for release'
-        run:  >
-              echo "current path $pwd" && 
-              New-Item -ItemType Directory -Force -Path ./releases/packages &&
-              Compress-Archive -Path "./releases/${{ matrix.os }}/${{env.APP_NAME}}/*" -DestinationPath "./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip"              
-
-          
-      - name: Releasing github package for ${{ matrix.os }}  
-        uses: softprops/action-gh-release@v1
+      # Create GitHub release and upload artifacts
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: SQLServerCoverage V${{ env.APP_VERSION }}
-          body: Releasing ${{env.APP_NAME}}_${{ env.APP_VERSION }}
+          name: SQLServerCoverage v${{ env.APP_VERSION }}
+          body: |
+            SQLServerCoverage Version ${{ env.APP_VERSION }}
+            
+            ## Platform Specific Builds
+            - Windows (win10-x64)
+            - Ubuntu 20.04 (ubuntu.20.04-x64)
+            - Linux (linux-x64)
+            - macOS (osx-x64)
+            
+            Please check the release notes for detailed changes.
           tag_name: v${{ env.APP_VERSION }}
-          files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip  
-          token: ${{ secrets.GITHUB_TOKEN }}          
+          files: ./releases/packages/${{env.APP_NAME}}_${{ env.APP_VERSION }}_${{ matrix.os }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
+          draft: false
+          prerelease: false
+
+ 

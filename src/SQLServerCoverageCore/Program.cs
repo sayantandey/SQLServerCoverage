@@ -25,7 +25,7 @@ namespace SQLServerCoverage.Core
             [Option('c', "command", Required = true, HelpText = "Choose command to run: Currently only Get-CoverTSql available")]
             public string Command { get; set; }
 
-            [Option('e', "exportType", Required = true, HelpText = "Choose export options : Export-OpenXml, Export-Html, Export-Cobertura")]
+            [Option('e', "exportType", Required = true, HelpText = "Choose export options: Export-OpenXml, Export-Html, Export-ReportGeneratorHtml, Export-Cobertura")]
             public string ExportType { get; set; }
 
             [Option('b', "debug", Required = false, HelpText = "Prints out detailed output.")]
@@ -50,9 +50,10 @@ namespace SQLServerCoverage.Core
             [Option('t', "timeout", Required = false, HelpText = "Wait time in Seconds before terminating the attempt to execute test SQL command")]
             public int TimeOut { get; set; }
 
-            [Option('i', "ignore", Required = false, HelpText = "Space separated list of database objects to ignore. Regex Accepted. Case sensitive depending on collation" +
+            [Option('i', "ignore", Required = false, HelpText = "Space separated list of database objects to ignore. Regex Accepted. Case sensitive depending on collation. " +
                                                                  "Ex.\"sp_dummy_proc* sp_test_proc\"")]
             public string IgnoreObjects { get; set; }
+ 
 
         }
         private enum CommandType
@@ -64,10 +65,12 @@ namespace SQLServerCoverage.Core
         private enum ExportType
         {
             ExportOpenXml,
-            ExportHtml,
+            ExportHtml,      // In-house generated HTML report
+            ExportReportGeneratorHtml,   // External dependency HTML report
             ExportCobertura,
             Unknown
         }
+
         /// <summary>
         /// 
         /// run by `dotnet run -- -c Get-CoverTSql -r`
@@ -115,11 +118,14 @@ namespace SQLServerCoverage.Core
                                requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
-                           case "Export-Html":
-                               eType = ExportType.ExportHtml;
-                               requiredExportParameters = new string[]{
-                                "outputPath"};
-                               break;
+                            case "Export-Html":
+                                eType = ExportType.ExportHtml;
+                                requiredExportParameters = new string[]{ "outputPath" };
+                                break;
+                            case "Export-ReportGeneratorHtml":
+                                eType = ExportType.ExportReportGeneratorHtml;
+                                requiredExportParameters = new string[]{ "outputPath" };
+                                break;
                            case "Export-Cobertura":
                                eType = ExportType.ExportCobertura;
                                requiredExportParameters = new string[]{
@@ -188,20 +194,19 @@ namespace SQLServerCoverage.Core
                                            results.SaveResult(openCoverFile, openCoverXml);
                                            results.SaveSourceFiles(outputPath);
                                            break;
-                                       case ExportType.ExportHtml:
-                                           openCoverXml = results.ToOpenCoverXml();
-                                           results.SaveResult(openCoverFile, openCoverXml);
-                                           results.SaveSourceFiles(outputPath);
+                                        case ExportType.ExportHtml:
+                                            openCoverXml = results.ToOpenCoverXml();
+                                            results.SaveResult(openCoverFile, openCoverXml);
+                                            results.SaveSourceFiles(outputPath);
 
-                                           results.ToHtml(outputPath, outputPath, openCoverFile);
-                                           break;
-                                       case ExportType.ExportCobertura:
-                                           openCoverXml = results.ToOpenCoverXml();
-                                           results.SaveResult(openCoverFile, openCoverXml);
-                                           results.SaveSourceFiles(outputPath);
-
-                                           results.ToCobertura(outputPath, outputPath, openCoverFile);
-                                           break;
+                                            results.GenerateNativeHtmlReport(outputPath);
+                                            break;
+                                        case ExportType.ExportReportGeneratorHtml:
+                                            openCoverXml = results.ToOpenCoverXml();
+                                            results.SaveResult(openCoverFile, openCoverXml);
+                                            results.SaveSourceFiles(outputPath);
+                                            results.ToHtml(outputPath, outputPath, openCoverFile);
+                                            break;
                                        default:
                                            Console.Error.WriteLine("Invalid export option provided. Saving Result as Json");
                                            resultString = results.ToJson();

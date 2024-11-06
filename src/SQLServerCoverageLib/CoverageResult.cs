@@ -8,6 +8,7 @@ using SQLServerCoverage.Objects;
 using SQLServerCoverage.Parsers;
 using SQLServerCoverage.Serializers;
 using Newtonsoft.Json;
+using System.Reflection;
 using Palmmedia.ReportGenerator.Core;
 using ReportGenerator;
 
@@ -21,6 +22,8 @@ namespace SQLServerCoverage
 
         public string DatabaseName { get; }
         public string DataSource { get; }
+        public TimeSpan TotalTimeTaken { get; private set; }
+
 
         public List<string> SqlExceptions
         {
@@ -33,7 +36,7 @@ namespace SQLServerCoverage
         }
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail,  TimeSpan totalTimeTaken)
         {
             _batches = batches;
             _sqlExceptions = sqlExceptions;
@@ -41,7 +44,7 @@ namespace SQLServerCoverage
             DatabaseName = database;
             DataSource = dataSource;
             var parser = new EventsParser(xml);
-
+            TotalTimeTaken = totalTimeTaken;
             var statement = parser.GetNextStatement();
 
             while (statement != null)
@@ -96,9 +99,11 @@ namespace SQLServerCoverage
         {
             foreach (var batch in _batches)
             {
-                File.WriteAllText(Path.Combine(path, batch.ObjectName), batch.Text);
+                string fileName = Path.Combine(path, batch.FileName + ".sql");
+                File.WriteAllText(fileName, batch.Text);
             }
         }
+
         private static string Unquote(string quotedStr) => quotedStr.Replace("'", "\"");
 
         public string ToOpenCoverXml()
@@ -123,6 +128,235 @@ namespace SQLServerCoverage
             var reportType = "HtmlInline";
             generateReport(targetDirectory, sourceDirectory, openCoverFile, reportType);
         }
+
+        public void GenerateNativeHtmlReport(string outputPath)
+        {
+            // Load the HTML template
+            string templateContent;
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("SQLServerCoverage.NativeHtmlReportTemplate.html"))
+            using (var reader = new StreamReader(stream))
+            {
+                templateContent = reader.ReadToEnd();
+            }
+
+
+            // Prepare data for the template
+            var reportData = new
+            {
+                TotalTimeTaken = Math.Round(this.TotalTimeTaken.TotalSeconds, 2),
+                StatementCount = this.StatementCount,
+                CoveredStatementCount = this.CoveredStatementCount,
+                UncoveredStatementCount = this.StatementCount - this.CoveredStatementCount,
+                StatementCoveragePercentage = (this.StatementCount == 0) ? 0 : Math.Round((double)this.CoveredStatementCount / this.StatementCount * 100, 2),
+                BranchesCount = this.BranchesCount,
+                CoveredBranchesCount = this.CoveredBranchesCount,
+                UncoveredBranchesCount = this.BranchesCount - this.CoveredBranchesCount,
+                BranchCoveragePercentage = (this.BranchesCount == 0) ? 0 : Math.Round((double)this.CoveredBranchesCount / this.BranchesCount * 100, 2),
+                Batches = this.Batches.Select(batch => new
+                {
+                    ObjectName = batch.ObjectName,
+                    StatementCount = batch.StatementCount,
+                    CoveredStatementCount = batch.CoveredStatementCount,
+                    StatementCoveragePercentage = (batch.StatementCount == 0) ? 0 : Math.Round((double)batch.CoveredStatementCount / batch.StatementCount * 100, 2),
+                    BranchesCount = batch.BranchesCount,
+                    CoveredBranchesCount = batch.CoveredBranchesCount,
+                    BranchCoveragePercentage = (batch.BranchesCount == 0) ? 0 : Math.Round((double)batch.CoveredBranchesCount / batch.BranchesCount * 100, 2),
+                    IsTested = batch.CoveredStatementCount > 0,
+                    CodeFile = batch.FileName + ".sql",
+                    LineCoverage = GetLineCoverage(batch),
+                    BranchCoverageDetails = batch.Statements.SelectMany(s => s.Branches.Select(b => new
+                    {
+                        LineNumber = GetOffsets(b.Offset, b.Length, batch.Text).StartLine,
+                        Description = b.Text.Trim(),
+                        HitCount = b.HitCount
+                    })).ToList()
+                }).ToList()
+            };
+
+            // Convert the report data to JSON for injection into the template
+            string reportDataJson = JsonConvert.SerializeObject(reportData);
+
+            // Inject the data into the template
+            string reportContent = templateContent.Replace("{{ReportDataJson}}", reportDataJson);
+            reportContent = reportContent.Replace("{{StatementCount}}", reportData.StatementCount.ToString());
+            reportContent = reportContent.Replace("{{CoveredStatementCount}}", reportData.CoveredStatementCount.ToString());
+            reportContent = reportContent.Replace("{{StatementCoveragePercentage}}", reportData.StatementCoveragePercentage.ToString());
+            reportContent = reportContent.Replace("{{BranchesCount}}", reportData.BranchesCount.ToString());
+            reportContent = reportContent.Replace("{{CoveredBranchesCount}}", reportData.CoveredBranchesCount.ToString());
+            reportContent = reportContent.Replace("{{BranchCoveragePercentage}}", reportData.BranchCoveragePercentage.ToString());
+            reportContent = reportContent.Replace("{{TotalTimeTaken}}", reportData.TotalTimeTaken.ToString());
+            reportContent = reportContent.Replace("{{UncoveredStatementCount}}", (reportData.StatementCount - reportData.CoveredStatementCount).ToString());
+            reportContent = reportContent.Replace("{{UncoveredBranchesCount}}", (reportData.BranchesCount - reportData.CoveredBranchesCount).ToString());
+
+            // Save the report
+            string reportPath = Path.Combine(outputPath, "CoverageReport.html");
+            File.WriteAllText(reportPath, reportContent);
+            Console.WriteLine("Generating HTML report in "+ reportPath);
+
+            // Save code files and generate individual procedure pages
+            foreach (var batch in this.Batches)
+            {
+                string codeFileName = batch.FileName + ".sql";
+                string codeFilePath = Path.Combine(outputPath, codeFileName);
+                File.WriteAllText(codeFilePath, batch.Text);
+
+                // Generate individual procedure page
+                GenerateProcedurePage(batch, outputPath, codeFileName);
+            }
+        }
+
+    private Dictionary<int, string> GetLineCoverage(Batch batch)
+    {
+        var lineCoverage = new Dictionary<int, string>(); // LineNumber -> CoverageClass
+
+        foreach (var statement in batch.Statements)
+        {
+            var offsets = GetOffsets(statement, batch.Text);
+            for (int line = offsets.StartLine; line <= offsets.EndLine; line++)
+            {
+                // Initialize coverage class as not covered
+                if (!lineCoverage.ContainsKey(line))
+                {
+                    lineCoverage[line] = "not-covered";
+                }
+
+                if (statement.HitCount > 0)
+                {
+                    lineCoverage[line] = "covered";
+                }
+            }
+
+            // Handle branches
+            foreach (var branch in statement.Branches)
+            {
+                var branchOffsets = GetOffsets(branch.Offset, branch.Length, batch.Text);
+                for (int line = branchOffsets.StartLine; line <= branchOffsets.EndLine; line++)
+                {
+                    if (!lineCoverage.ContainsKey(line))
+                    {
+                        lineCoverage[line] = "not-covered";
+                    }
+
+                    if (branch.HitCount > 0)
+                    {
+                        if (lineCoverage[line] == "not-covered")
+                        {
+                            lineCoverage[line] = "partial";
+                        }
+                    }
+                    else
+                    {
+                        if (lineCoverage[line] == "covered")
+                        {
+                            lineCoverage[line] = "partial";
+                        }
+                    }
+                }
+            }
+        }
+
+        return lineCoverage;
+    }
+
+
+    private void GenerateProcedurePage(Batch batch, string outputPath, string codeFileName)
+    {
+        string templateContent;
+        var assembly = Assembly.GetExecutingAssembly();
+        using (var stream = assembly.GetManifestResourceStream("SQLServerCoverage.sp_template.html"))
+        using (var reader = new StreamReader(stream))
+        {
+            templateContent = reader.ReadToEnd();
+        }
+
+
+        // Read the code content
+        string codeContent = batch.Text;
+
+        // Prepare data for the template
+        var lineCoverage = GetLineCoverage(batch);
+        var lineDetails = GetLineDetails(batch); // Function to get line details from OpenCover data
+
+        var procedureData = new
+        {
+            ProcedureName = batch.ObjectName,
+            CodeContent = codeContent,
+            CoveredStatementCount = batch.CoveredStatementCount,
+            UncoveredStatementCount = batch.StatementCount - batch.CoveredStatementCount,
+            CoveredBranchesCount = batch.CoveredBranchesCount,
+            UncoveredBranchesCount = batch.BranchesCount - batch.CoveredBranchesCount,
+            LineCoverageJson = JsonConvert.SerializeObject(lineCoverage),
+            LineDetailsJson = JsonConvert.SerializeObject(lineDetails)
+        };
+
+        // Serialize the code content into a JSON string
+        string codeContentJson = JsonConvert.SerializeObject(procedureData.CodeContent);
+
+        // Inject data into template
+        string pageContent = templateContent
+            .Replace("{{ProcedureName}}", procedureData.ProcedureName)
+            .Replace("{{CodeContentJson}}", codeContentJson)
+            .Replace("{{CoveredStatementCount}}", procedureData.CoveredStatementCount.ToString())
+            .Replace("{{UncoveredStatementCount}}", procedureData.UncoveredStatementCount.ToString())
+            .Replace("{{CoveredBranchesCount}}", procedureData.CoveredBranchesCount.ToString())
+            .Replace("{{UncoveredBranchesCount}}", procedureData.UncoveredBranchesCount.ToString())
+            .Replace("{{LineCoverageJson}}", procedureData.LineCoverageJson)
+            .Replace("{{LineDetailsJson}}", procedureData.LineDetailsJson);
+
+
+        // Save the procedure page
+        string sanitizedFileName = GetSafeFilename(batch.ObjectName);
+        string procedurePagePath = Path.Combine(outputPath, sanitizedFileName + ".html");
+        File.WriteAllText(procedurePagePath, pageContent);
+    }
+
+    private string GetSafeFilename(string filename)
+    {
+        return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+    }
+
+    private Dictionary<int, string> GetLineDetails(Batch batch)
+    {
+        var lineDetails = new Dictionary<int, string>();
+
+        foreach (var statement in batch.Statements)
+        {
+            var offsets = GetOffsets(statement, batch.Text);
+            for (int line = offsets.StartLine; line <= offsets.EndLine; line++)
+            {
+                string detail = $"Statement Hits: {statement.HitCount}";
+                if (lineDetails.ContainsKey(line))
+                {
+                    lineDetails[line] += "\n" + detail;
+                }
+                else
+                {
+                    lineDetails[line] = detail;
+                }
+            }
+
+            foreach (var branch in statement.Branches)
+            {
+                var branchOffsets = GetOffsets(branch.Offset, branch.Length, batch.Text);
+                for (int line = branchOffsets.StartLine; line <= branchOffsets.EndLine; line++)
+                {
+                    string detail = $"Branch Hits: {branch.HitCount}";
+                    if (lineDetails.ContainsKey(line))
+                    {
+                        lineDetails[line] += "\n" + detail;
+                    }
+                    else
+                    {
+                        lineDetails[line] = detail;
+                    }
+                }
+            }
+        }
+
+        return lineDetails;
+    }
+
 
         /// <summary>
         /// Use ReportGenerator Tool to Convert Open XML To Cobertura

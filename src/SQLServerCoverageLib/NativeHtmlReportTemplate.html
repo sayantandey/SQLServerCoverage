@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Server Coverage Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>:root {
+        --primary-color: #2D3250;
+        --secondary-color: #424769;
+        --accent-color: #7077A1;
+        --background-color: #F6F6F6;
+        --success-color: #4CAF50;
+        --warning-color: #FF9800;
+        --danger-color: #F44336;
+        --text-primary: #333;
+        --text-secondary: #666;
+        --border-radius: 8px;
+        --transition-speed: 0.3s;
+    }
+    
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+    }
+    
+    .summary {
+        background-color: white;
+        border-radius: var(--border-radius);
+        margin: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .summary h2 {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin: 0.5rem 0;
+        padding-bottom: 0.3rem;
+        border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .charts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        height: 250px;
+        position: relative;
+    }
+    
+    .chart-percentage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        text-align: center;
+        line-height: 1;
+        z-index: 1;
+    }
+    
+    .chart-percentage small {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: normal;
+        color: var(--text-secondary);
+        margin-top: 0.2rem;
+    }
+    
+    .procedures-list {
+        margin: 0.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .procedures-list h2 {
+        margin: 0.5rem 0;
+        padding-bottom: 0.3rem;
+    }
+    
+    .procedures-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: white;
+    }
+    
+    .procedures-table th,
+    .procedures-table td {
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+    }
+    
+    .procedures-table th {
+        background-color: var(--secondary-color);
+        color: white;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        transition: background-color var(--transition-speed);
+    }
+    
+    .procedures-table th.sortable {
+        cursor: pointer;
+    }
+    
+    .procedures-table th.sortable:hover {
+        background-color: var(--primary-color);
+    }
+    
+    .procedures-table tr:hover {
+        background-color: rgba(112, 119, 161, 0.05);
+        transition: background-color var(--transition-speed);
+    }
+    
+    .coverage-bar {
+        height: 6px;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 4px 0;
+    }
+    
+    .coverage-bar-inner {
+        height: 100%;
+        border-radius: 4px;
+        transition: width var(--transition-speed);
+    }
+    
+    .coverage-bar-inner.statement {
+        background: linear-gradient(90deg, var(--success-color), #81C784);
+    }
+    
+    .coverage-bar-inner.branch {
+        background: linear-gradient(90deg, var(--warning-color), #FFB74D);
+    }
+    
+    /* Modern sorting indicators */
+    .procedures-table th.sortable:after {
+        content: '↕';
+        margin-left: 8px;
+        opacity: 0.5;
+    }
+    
+    .procedures-table th.sortable.active:after {
+        opacity: 1;
+    }
+    
+    .procedures-table th.sortable.desc:after {
+        content: '↓';
+    }
+    
+    .procedures-table th.sortable.asc:after {
+        content: '↑';
+    }
+    
+    /* Table link styling */
+    .procedures-table a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+    }
+    
+    .procedures-table a:hover {
+        color: var(--accent-color);
+        text-decoration: underline;
+    }
+    
+    /* Highlighted rows */
+    .procedures-table tr.highlighted {
+        background-color: rgba(112, 119, 161, 0.08);
+    }
+    
+    /* Responsive design improvements */
+    @media (max-width: 768px) {
+        .summary, .procedures-list {
+            margin: 0.5rem;
+            padding: 0.5rem;
+        }
+    
+        .procedures-table {
+            display: block;
+            overflow-x: auto;
+        }
+    
+        .chart-container {
+            height: 200px;
+        }
+    
+        .chart-percentage {
+            font-size: 1.5rem;
+        }
+    
+        .chart-percentage small {
+            font-size: 0.8rem;
+        }
+    }</style>
+</head>
+
+<body>
+    <header>
+        <h1><i class="fas fa-chart-pie"></i> SQL Server Coverage Report</h1>
+    </header>
+
+    <div class="summary">
+        <h2><i class="fas fa-clipboard-list"></i> Overall Coverage Summary</h2>
+        <p><strong><i class="fas fa-clock"></i> Total Time Taken:</strong> {{TotalTimeTaken}} seconds</p>
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="coverageChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="branchCoverageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="procedures-list">
+        <h2><i class="fas fa-database"></i> Stored Procedures and Functions</h2>
+        <table class="procedures-table">
+            <thead>
+                <tr>
+                    <th class="sortable" data-sort="ObjectName">Name</th>
+                    <th class="sortable" data-sort="StatementCount">Statements</th>
+                    <th class="sortable" data-sort="CoveredStatementCount">Covered</th>
+                    <th class="sortable" data-sort="StatementCoveragePercentage">Coverage</th>
+                    <th class="sortable" data-sort="BranchesCount">Branches</th>
+                    <th class="sortable" data-sort="CoveredBranchesCount">Covered</th>
+                    <th class="sortable" data-sort="BranchCoveragePercentage">Branch Coverage</th>
+                </tr>
+            </thead>
+            <tbody id="proceduresBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        var reportData = {{ReportDataJson}};
+
+        // Enhanced Chart.js configuration
+        const createDoughnutChart = (ctx, data, title, colors) => {
+        // Calculate the percentage for the first value (covered percentage)
+        const total = data.values.reduce((a, b) => a + b, 0);
+        const percentage = ((data.values[0] / total) * 100).toFixed(1);
+
+        // Create percentage display div if it doesn't exist
+        const canvasParent = ctx.canvas.parentElement;
+        let percentageDiv = canvasParent.querySelector('.chart-percentage');
+        if (!percentageDiv) {
+            percentageDiv = document.createElement('div');
+            percentageDiv.className = 'chart-percentage';
+            canvasParent.appendChild(percentageDiv);
+        }
+        
+        // Update percentage display
+        percentageDiv.innerHTML = `${percentage}%<small>${title}</small>`;
+
+        return new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: colors,
+                    borderWidth: 0,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%', // Increased cutout for larger hole
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 10, // Reduced padding
+                            usePointStyle: true,
+                            font: {
+                                size: 11 // Smaller font size
+                            }
+                        }
+                    },
+                    title: {
+                        display: false // Removed title as it's now in the center
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: 0 // Remove padding
+                }
+            }
+        });
+    };
+        // Initialize charts with enhanced styling
+        window.addEventListener('load', () => {
+            const coverageCtx = document.getElementById('coverageChart').getContext('2d');
+            const branchCtx = document.getElementById('branchCoverageChart').getContext('2d');
+
+            const coverageChart = createDoughnutChart(
+                coverageCtx,
+                {
+                    labels: ['Covered Statements', 'Uncovered Statements'],
+                    values: [{{CoveredStatementCount}}, {{UncoveredStatementCount}}]
+                },
+                'Statement Coverage',
+                ['#4CAF50', '#F44336']
+            );
+
+            const branchChart = createDoughnutChart(
+                branchCtx,
+                {
+                    labels: ['Covered Branches', 'Uncovered Branches'],
+                    values: [{{CoveredBranchesCount}}, {{UncoveredBranchesCount}}]
+                },
+                'Branch Coverage',
+                ['#FF9800', '#FFE0B2']
+            );
+        });
+
+        // Enhanced table rendering with animations
+        function renderProceduresTable(data) {
+            const tbody = document.getElementById('proceduresBody');
+            tbody.innerHTML = '';
+
+            data.Batches.forEach(batch => {
+                const row = document.createElement('tr');
+                const sanitizedFileName = batch.ObjectName.replace(/[\/\\\?%*:|"<>]/g, '_');
+
+                row.innerHTML = `
+                    <td>
+                        <a href="${sanitizedFileName}.html" class="object-link">
+                            ${batch.ObjectName}
+                        </a>
+                    </td>
+                    <td>${batch.StatementCount}</td>
+                    <td>${batch.CoveredStatementCount}</td>
+                    <td>
+                        <div class="coverage-bar">
+                            <div class="coverage-bar-inner statement" 
+                                 style="width: ${batch.StatementCoveragePercentage}%"></div>
+                        </div>
+                        ${batch.StatementCoveragePercentage}%
+                    </td>
+                    <td>${batch.BranchesCount}</td>
+                    <td>${batch.CoveredBranchesCount}</td>
+                    <td>
+                        <div class="coverage-bar">
+                            <div class="coverage-bar-inner branch" 
+                                 style="width: ${batch.BranchCoveragePercentage}%"></div>
+                        </div>
+                        ${batch.BranchCoveragePercentage}%
+                    </td>
+                `;
+
+                if (batch.IsTested) {
+                    row.classList.add('highlighted');
+                }
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Enhanced sorting functionality with animation
+        document.querySelectorAll('.procedures-table th.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const sortKey = header.getAttribute('data-sort');
+                const currentOrder = header.classList.contains('desc') ? 'desc' : 'asc';
+
+                document.querySelectorAll('.procedures-table th.sortable').forEach(th => {
+                    th.classList.remove('active', 'desc', 'asc');
+                });
+
+                const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+                header.classList.add('active', newOrder);
+
+                reportData.Batches.sort((a, b) => {
+                    let valA = a[sortKey];
+                    let valB = b[sortKey];
+
+                    if (typeof valA === 'string') {
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    return (newOrder === 'asc' ? 1 : -1) * (valA > valB ? 1 : -1);
+                });
+
+                renderProceduresTable(reportData);
+            });
+        });
+
+        // Initial render
+        renderProceduresTable(reportData);
+    </script>
+</body>
+</html>

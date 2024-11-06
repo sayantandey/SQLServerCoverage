@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>[coverage].[sp_complex_business_logic] - SQL Server Coverage Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D3250;
+            --secondary-color: #424769;
+            --accent-color: #7077A1;
+            --background-color: #F6F6F6;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --danger-color: #F44336;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-radius: 8px;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .summary {
+            background-color: white;
+            border-radius: var(--border-radius);
+            margin: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary h2 {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin: 0.5rem 0;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            height: 250px;
+            position: relative;
+        }
+
+        .chart-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            line-height: 1;
+            z-index: 1;
+        }
+
+        .chart-percentage small {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+        }
+
+        .code {
+            background-color: white;
+            border-radius: var(--border-radius);
+            margin: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        .code pre {
+            margin: 0;
+            line-height: 1.5;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-line {
+            display: block;
+            position: relative;
+            padding: 0.1rem 0.5rem 0.1rem 3rem;
+        }
+
+        .code-line .line-number {
+            position: absolute;
+            left: 0;
+            width: 2.5rem;
+            text-align: right;
+            color: var(--text-secondary);
+            user-select: none;
+            font-size: 0.85rem;
+        }
+
+        .code-line.covered {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid var(--success-color);
+        }
+
+        .code-line.not-covered {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left: 3px solid var(--danger-color);
+        }
+
+        .code-line.partial {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 3px solid var(--warning-color);
+        }
+
+        .code-line .tooltip {
+            visibility: hidden;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+        }
+
+        .code-line:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .code-line:hover .tooltip {
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .summary, .code {
+                margin: 0.5rem;
+                padding: 0.5rem;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+
+            .chart-percentage {
+                font-size: 1.5rem;
+            }
+
+            .code-line {
+                padding-left: 2.5rem;
+            }
+
+            .code-line .line-number {
+                width: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-code"></i> [coverage].[sp_complex_business_logic]</h1>
+    </header>
+
+    <div class="summary">
+        <h2><i class="fas fa-chart-pie"></i> Coverage Summary</h2>
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="coverageChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="branchCoverageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="code">
+        <pre id="codeContent"></pre>
+    </div>
+
+    <script>
+        var coverageData = {
+            labels: ['Covered Statements', 'Uncovered Statements'],
+            datasets: [{
+                data: [8, 9],
+                backgroundColor: ['#4CAF50', '#F44336'],
+            }]
+        };
+        var branchCoverageData = {
+            labels: ['Covered Branches', 'Uncovered Branches'],
+            datasets: [{
+                data: [1, 6],
+                backgroundColor: ['#FF9800', '#EF9A9A'],
+            }]
+        };
+
+        const createDoughnutChart = (ctx, data, title) => {
+            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const percentage = ((data.datasets[0].data[0] / total) * 100).toFixed(1);
+
+            const canvasParent = ctx.canvas.parentElement;
+            let percentageDiv = canvasParent.querySelector('.chart-percentage');
+            if (!percentageDiv) {
+                percentageDiv = document.createElement('div');
+                percentageDiv.className = 'chart-percentage';
+                canvasParent.appendChild(percentageDiv);
+            }
+            
+            percentageDiv.innerHTML = `${percentage}%<small>${title}</small>`;
+
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 10,
+                                usePointStyle: true,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    layout: { padding: 0 }
+                }
+            });
+        };
+
+        const ctx = document.getElementById('coverageChart').getContext('2d');
+        const ctxBranch = document.getElementById('branchCoverageChart').getContext('2d');
+        
+        createDoughnutChart(ctx, coverageData, 'Statement Coverage');
+        createDoughnutChart(ctxBranch, branchCoverageData, 'Branch Coverage');
+
+        var codeText = "\r\n-- Create complex business logic procedure with multiple paths\r\nCREATE PROCEDURE coverage.sp_complex_business_logic\r\n    @department NVARCHAR(50),\r\n    @salaryAdjustment DECIMAL(5,2),\r\n    @actionType CHAR(1)\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n    \r\n    -- Variable declarations for different paths\r\n    DECLARE @totalEmployees INT;\r\n    DECLARE @avgSalary DECIMAL(18,2);\r\n    DECLARE @maxSalary DECIMAL(18,2);\r\n    \r\n    -- Initialize variables with department statistics\r\n    SELECT \r\n        @totalEmployees = COUNT(*),\r\n        @avgSalary = AVG(Salary),\r\n        @maxSalary = MAX(Salary)\r\n    FROM coverage.Employees\r\n    WHERE Department = @department\r\n        AND IsActive = 1;\r\n    \r\n    -- Multiple execution paths based on conditions\r\n    IF @totalEmployees = 0\r\n    BEGIN\r\n        THROW 50006, 'No active employees found in specified department', 1;\r\n        RETURN;\r\n    END\r\n    \r\n    -- Nested conditions for different business scenarios\r\n    IF @actionType = 'A' -- Adjust salaries\r\n    BEGIN\r\n        IF @salaryAdjustment > 10.00\r\n        BEGIN\r\n            THROW 50007, 'Salary adjustment cannot exceed 10%', 1;\r\n            RETURN;\r\n        END\r\n        \r\n        IF @avgSalary * (1 + @salaryAdjustment/100) > @maxSalary\r\n        BEGIN\r\n            PRINT 'Warning: Adjustment will exceed historical maximum salary';\r\n        END\r\n        \r\n        UPDATE coverage.Employees\r\n        SET Salary = Salary * (1 + @salaryAdjustment/100),\r\n            ModifiedDate = coverage.fn_get_current_timestamp()\r\n        WHERE Department = @department\r\n            AND IsActive = 1;\r\n            \r\n        DECLARE @adjustDetails NVARCHAR(MAX) = N'Applied ' + CAST(@salaryAdjustment AS NVARCHAR(10)) + N'% salary adjustment to ' + @department;\r\n        EXEC coverage.sp_audit_log \r\n            @eventType = 'SALARY_ADJUSTMENT',\r\n            @objectName = 'Employees',\r\n            @eventDetails = @adjustDetails;\r\n    END\r\n    ELSE IF @actionType = 'R' -- Generate report\r\n    BEGIN\r\n        SELECT \r\n            Department,\r\n            COUNT(*) as EmployeeCount,\r\n            AVG(Salary) as AvgSalary,\r\n            MIN(Salary) as MinSalary,\r\n            MAX(Salary) as MaxSalary\r\n        FROM coverage.Employees\r\n        WHERE Department = @department\r\n            AND IsActive = 1\r\n        GROUP BY Department;\r\n            \r\n        DECLARE @reportDetails NVARCHAR(MAX) = N'Generated department report for ' + @department;\r\n        EXEC coverage.sp_audit_log \r\n            @eventType = 'REPORT_GENERATED',\r\n            @objectName = 'Employees',\r\n            @eventDetails = @reportDetails;\r\n    END\r\n    ELSE\r\n    BEGIN\r\n        THROW 50008, 'Invalid action type specified', 1;\r\n    END\r\nEND;\r\n\r\n\r\n";
+        var lines = codeText.split(/\r?\n/);
+        var lineCoverage = {"9":"covered","17":"covered","18":"covered","19":"covered","20":"covered","21":"covered","22":"covered","23":"covered","26":"covered","27":"not-covered","28":"not-covered","29":"not-covered","30":"not-covered","33":"covered","34":"partial","35":"covered","36":"partial","37":"partial","38":"partial","39":"partial","40":"partial","41":"covered","42":"partial","43":"partial","44":"partial","45":"partial","46":"covered","47":"covered","48":"covered","49":"covered","50":"covered","51":"partial","52":"partial","53":"covered","54":"covered","55":"covered","56":"covered","57":"partial","58":"not-covered","59":"not-covered","60":"not-covered","61":"not-covered","62":"not-covered","63":"not-covered","64":"not-covered","65":"not-covered","66":"not-covered","67":"not-covered","68":"not-covered","69":"not-covered","70":"not-covered","71":"not-covered","72":"not-covered","73":"not-covered","74":"not-covered","75":"not-covered","76":"not-covered","77":"not-covered","78":"not-covered","79":"not-covered","80":"not-covered"};
+        var lineDetails = {"9":"Statement Hits: 1","17":"Statement Hits: 1","18":"Statement Hits: 1","19":"Statement Hits: 1","20":"Statement Hits: 1","21":"Statement Hits: 1","22":"Statement Hits: 1","23":"Statement Hits: 1","26":"Statement Hits: 1","27":"Branch Hits: 0","28":"Branch Hits: 0\nStatement Hits: 0","29":"Branch Hits: 0\nStatement Hits: 0","30":"Branch Hits: 0","33":"Statement Hits: 1","34":"Branch Hits: 1","35":"Branch Hits: 1\nStatement Hits: 1","36":"Branch Hits: 1\nBranch Hits: 0","37":"Branch Hits: 1\nBranch Hits: 0\nStatement Hits: 0","38":"Branch Hits: 1\nBranch Hits: 0\nStatement Hits: 0","39":"Branch Hits: 1\nBranch Hits: 0","40":"Branch Hits: 1","41":"Branch Hits: 1\nStatement Hits: 1","42":"Branch Hits: 1\nBranch Hits: 0","43":"Branch Hits: 1\nBranch Hits: 0\nStatement Hits: 0","44":"Branch Hits: 1\nBranch Hits: 0","45":"Branch Hits: 1","46":"Branch Hits: 1\nStatement Hits: 1","47":"Branch Hits: 1\nStatement Hits: 1","48":"Branch Hits: 1\nStatement Hits: 1","49":"Branch Hits: 1\nStatement Hits: 1","50":"Branch Hits: 1\nStatement Hits: 1","51":"Branch Hits: 1","52":"Branch Hits: 1","53":"Branch Hits: 1\nStatement Hits: 1","54":"Branch Hits: 1\nStatement Hits: 1","55":"Branch Hits: 1\nStatement Hits: 1","56":"Branch Hits: 1\nStatement Hits: 1","57":"Branch Hits: 1","58":"Branch Hits: 0\nStatement Hits: 0","59":"Branch Hits: 0\nBranch Hits: 0","60":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","61":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","62":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","63":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","64":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","65":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","66":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","67":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","68":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","69":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","70":"Branch Hits: 0\nBranch Hits: 0","71":"Branch Hits: 0\nBranch Hits: 0","72":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","73":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","74":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","75":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","76":"Branch Hits: 0\nBranch Hits: 0","77":"Branch Hits: 0","78":"Branch Hits: 0\nBranch Hits: 0","79":"Branch Hits: 0\nBranch Hits: 0\nStatement Hits: 0","80":"Branch Hits: 0\nBranch Hits: 0"};
+
+        var codeContent = document.getElementById('codeContent');
+        lines.forEach(function(code, index) {
+            var lineNumber = index + 1;
+            var coverageClass = lineCoverage[lineNumber] || '';
+            var tooltipInfo = lineDetails[lineNumber] || '';
+            var lineElement = document.createElement('div');
+            lineElement.className = 'code-line ' + coverageClass;
+            lineElement.innerHTML = '<span class="line-number">' + lineNumber + '</span>' + escapeHtml(code);
+            if (tooltipInfo) {
+                var tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = tooltipInfo;
+                lineElement.appendChild(tooltip);
+            }
+            codeContent.appendChild(lineElement);
+        });
+
+        function escapeHtml(text) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+                '`': '&#x60;'
+            };
+            return text.replace(/[&<>"'`]/g, function(m) { return map[m]; });
+        }
+    </script>
+</body>
+</html>

@@ -21,7 +21,7 @@ namespace SQLServerCoverage
         private readonly bool _logging;
         private readonly SourceGateway _source;
         private CoverageResult _result;
-
+        private DateTime asyncTimeStart ;
         public const short TIMEOUT_EXPIRED = -2; //From TdsEnums
         public SQLServerCoverageException Exception { get; private set; } = null;
         public bool IsStarted { get; private set; } = false;
@@ -64,6 +64,7 @@ namespace SQLServerCoverage
 
         public bool Start(int timeOut = 30)
         {
+            asyncTimeStart = DateTime.Now;
             Exception = null;
             try
             {
@@ -102,7 +103,7 @@ namespace SQLServerCoverage
 
             var results = StopInternal();
 
-            GenerateResults(_excludeFilter, results, new List<string>(), "SQLServerCoverage result of running external process");
+            GenerateResults(_excludeFilter, results, new List<string>(), "SQLServerCoverage result of running external process", DateTime.Now - asyncTimeStart);
 
             return _result;
         }
@@ -115,7 +116,6 @@ namespace SQLServerCoverage
 
         public CoverageResult Cover(string command, int timeOut = 30)
         {
-
             Debug("Starting Code Coverage");
 
             _database.TimeOut = timeOut;
@@ -123,8 +123,9 @@ namespace SQLServerCoverage
             if (!Start())
             {
                 throw new SQLServerCoverageException("Unable to start the trace - errors are recorded in the debug output");
-
             }
+
+            DateTime startTime = DateTime.Now; // Record start time
 
             Debug("Executing Command: {0}", command);
 
@@ -148,6 +149,9 @@ namespace SQLServerCoverage
                 Console.WriteLine("Exception running command: {0} - error: {1}", command, e.Message);
             }
 
+            DateTime endTime = DateTime.Now; // Record end time
+            TimeSpan totalTimeTaken = endTime - startTime;
+
             Debug("Executing Command: {0}...done", command);
             WaitForTraceMaxLatency();
             Debug("Stopping Code Coverage");
@@ -156,7 +160,7 @@ namespace SQLServerCoverage
                 var rawEvents = StopInternal();
 
                 Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents, sqlExceptions, $"SQLServerCoverage result of running '{command}'");
+                GenerateResults(_excludeFilter, rawEvents, sqlExceptions, $"SQLServerCoverage result of running '{command}'", totalTimeTaken);
                 Debug("Result generated");
             }
             catch (Exception e)
@@ -174,10 +178,10 @@ namespace SQLServerCoverage
             Thread.Sleep(MAX_DISPATCH_LATENCY);
         }
 
-        private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions, string commandDetail)
+        private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions, string commandDetail, TimeSpan totalTimeTaken)
         {
             var batches = _source.GetBatches(filter);
-            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions, commandDetail);
+            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions, commandDetail, totalTimeTaken);
         }
 
         public CoverageResult Results()

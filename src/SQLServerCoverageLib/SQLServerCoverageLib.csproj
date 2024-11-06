@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
@@ -11,4 +11,12 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ReportGenerator.Core" Version="5.3.11" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NativeHtmlReportTemplate.html">
+        <LogicalName>SQLServerCoverage.NativeHtmlReportTemplate.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sp_template.html">
+        <LogicalName>SQLServerCoverage.sp_template.html</LogicalName>
+    </EmbeddedResource>
+</ItemGroup>
 </Project>
