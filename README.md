@@ -1,4 +1,8 @@
 # SQLServerCoverage 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/sayantandey/SQLServerCoverage/blob/main/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/sayantandey/SQLServerCoverage.svg)](https://github.com/sayantandey/SQLServerCoverage/releases/latest)
+[![.NET Core Desktop](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/sayantandey/SQLServerCoverage/actions/workflows/dotnet-desktop.yml)
+[![Github All Releases](https://img.shields.io/github/downloads/sayantandey/SQLServerCoverage/total.svg)]()
 
 ##### Code coverage for SQL Server T-SQL 
 
@@ -23,11 +27,6 @@
 :white_check_mark: Output SQL Server Generated Messages during Execution
 
 :white_check_mark: Generate latest Cobertura Report using 0.4 DTD
-
-:white_check_mark: Custom HTML Report (Without 3rd party dependency)
-
-:white_check_mark: Upgraded to `.NET 8.0`
-
 ____
 
 # Index
@@ -56,7 +55,7 @@ Read the [build](#build ) section for building the tool.
 * From the project root directory
 
   ```
-  dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj  -c Release  -r win-x64 -o "releases/<RUNTIME_IDENTIFIER>" --self-contained true  -p:PublishSingleFile=true
+  dotnet publish src/SQLServerCoverageCore/SQLServerCoverageCore.csproj  -c Release  -r <RUNTIME_IDENTIFIER> -o "releases/<RUNTIME_IDENTIFIER>" --self-contained true  -p:PublishSingleFile=true
   ```
 
   > For `RUNTIME_IDENTIFIER` put the os version for your system. 
@@ -84,7 +83,7 @@ Copyright (C) 2024 SQLServerCoverageCore
 
   -c, --command             Required. Choose command to run: Currently only Get-CoverTSql available
 
-  -e, --exportType          Required. Choose export options: Export-OpenXml, Export-Html, Export-ReportGeneratorHtml, Export-Cobertura
+  -e, --exportType          Required. Choose export options: Export-OpenXml, Export-BasicHtml, Export-DetailedHtml, Export-Cobertura
 
   -b, --debug               Prints out detailed output.
 
@@ -100,7 +99,7 @@ Copyright (C) 2024 SQLServerCoverageCore
 
   -t, --timeout             Wait time in Seconds before terminating the attempt to execute test SQL command
 
-  -i, --ignore              Space separated list of database objects to ignore. Regex Accepted. Case sensitive depending on collation. Ex."sp_dummy_proc* sp_test_proc"
+  -i, --ignore              Space separated list of database objects to ignore. Regex Accepted. Case sensitive depending on collationEx."sp_dummy_proc* sp_test_proc"
 
   --help                    Display this help screen.
 
@@ -109,12 +108,37 @@ Copyright (C) 2024 SQLServerCoverageCore
 
 ### Example:
 
+> #### Quick Check Using Docker 
+>
+> 1. Go to the Docker directory and spin up the SQL Server in a docker container
+>
+>    ```
+>    docker-compose -f "./example/Docker/docker-compose.yaml" up -d
+>    ```
+>
+> 2. Then setup the mock test suite :
+>    ```bash
+>    SQLServerCoverage>docker exec sql_coverage /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrONg_P/\$ -i /scripts/mocked_test_suit.sql -C -N -t 30
+>    Changed database context to 'sql_coverage_test'.
+>    Configuration option 'show advanced options' changed from 1 to 1. Run the RECONFIGURE statement to install.
+>    
+>    (3 rows affected)
+>    
+>    ```
+>
+> 3. Runt the coverage server
+>    ```
+>    "releases\win-x64/SQLServerCoverageCore" -v true -c Get-CoverTSql -e Export-Html -d "sql_coverage_test" -o "example/Coverage Example/HTML Report" -q "EXEC coverage.sp_process_employee @firstName='John', @lastName='Test', @email='john.test@example.com', @birthDate='1990-01-01', @department='IT', @salary=60000.00, @operation='C'; EXEC coverage.sp_complex_business_logic @department='IT', @salaryAdjustment=5.0, @actionType='A';" -k "Server=localhost,1433;Database=sql_coverage_test;User Id=sa;Password=StrONg_P/\$;TrustServerCertificate=True" -t 30 -i "exclude.sp_maintenance,exclude.sp_cleanup"
+>    ```
+>
+>    
+
 ##### 1. OpenCover Format
 
 Generate the coverage report as xml
 
 ```bash
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 This will generate the OpenCover xml report in `OUTPUT_PATH` along with the source files in the database it is executed.
@@ -124,7 +148,7 @@ This will generate the OpenCover xml report in `OUTPUT_PATH` along with the sour
 Generate the coverage report as html. It leverages ReportGenerator to Generate Inline HTML Report of Coverage.
 
 ```bash
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-Html -d <DATABASE_NAME> -q <Query> -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 ![](./example/Coverage%20Check%20CLI.gif)
@@ -139,7 +163,7 @@ It can be used with tSQLt framework to check the coverage.
 
 If you have a script you want to cover then you can call:
 ```
-SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING>
+SQLServerCoverageCore -v true -c Get-CoverTSql -e Export-OpenXml -d <DATABASE_NAME> -q "exec tSQLt.RunAll" -o <OUTPUT_PATH> -k <CONNECTION_STRING> -t <connection_timeout> -i <ignore_sql_objects>
 ```
 
 This will generate a openxml coverage report where you can either examine the amount of statement covered or use the report to generate HTML report using [ReportGenerator](https://github.com/danielpalme/ReportGenerator).

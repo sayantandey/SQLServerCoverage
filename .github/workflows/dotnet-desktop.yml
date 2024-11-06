@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         # Define target platforms
-        os: [win10-x64, ubuntu.20.04-x64, linux-x64, osx-x64]
+        os: [win-x64,win-x86,linux-x64,linux-arm64,osx-x64,osx-arm64]
     
     env:
       APP_NAME: SQLServerCoverage

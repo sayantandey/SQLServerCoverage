@@ -286,7 +286,7 @@
         var codeText = "\r\n-- Create utility functions\r\nCREATE FUNCTION coverage.fn_get_current_timestamp()\r\nRETURNS DATETIME\r\nAS\r\nBEGIN\r\n    RETURN GETDATE();\r\nEND;\r\n\r\n\r\n";
         var lines = codeText.split(/\r?\n/);
         var lineCoverage = {"7":"covered"};
-        var lineDetails = {"7":"Statement Hits: 56"};
+        var lineDetails = {"7":"Statement Hits: 57"};
 
         var codeContent = document.getElementById('codeContent');
         lines.forEach(function(code, index) {
